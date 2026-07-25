@@ -6,7 +6,6 @@ import '../config/constants.dart';
 import 'package:path_provider/path_provider.dart';
 
 class VideoCacheManager {
-  final SupabaseService _supabase = SupabaseService();
   static const int maxVideos = AppConstants.localVideosLimit;
   static const String videoDirName = 'LocalCach';
 
