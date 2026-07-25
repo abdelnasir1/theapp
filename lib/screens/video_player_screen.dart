@@ -117,7 +117,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                         ? Icons.pause_circle_filled
                         : Icons.play_circle_filled,
                     size: 72,
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                   ),
                 ),
               ),
