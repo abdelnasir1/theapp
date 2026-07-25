@@ -41,33 +41,23 @@ class VideoCacheManager {
     }
   }
   String getPathFromUrl(String url) {
-    // Remove everything before "/videos/"
     final uri = Uri.parse(url);
-
-    // Find the index of the bucket name
     final segments = uri.pathSegments;
-
-    // Example pathSegments:
-    // ["storage", "v1", "object", "public", "videos", "user123", "my_short_video.mp4"]
-
     final bucketIndex = segments.indexOf('videos'); // your bucket name
-
     if (bucketIndex == -1 || bucketIndex + 1 >= segments.length) {
       throw Exception('Invalid Supabase storage URL');
     }
 
-    // Take everything after the bucket name
-    final path = segments.sublist(bucketIndex + 1).join('/');
-    return path; // → "user123/my_short_video.mp4"
+    late final path = segments.sublist(bucketIndex + 1).join('/');
+    return path;
   }
-  // Download + Save with LRU
   Future<File?> downloadVideo(String supabasePath, String localFileName) async {
     try {
-      await enforceLimit(); // Clean before adding new
-      supabasePath = getPathFromUrl(supabasePath);
+      await enforceLimit();
+      var videopath = getPathFromUrl(supabasePath);
       final response = await  Supabase.instance.client.storage
           .from('videos')
-          .download(supabasePath);
+          .download(videopath);
 
       final dir = await getVideoDirectory();
       final file = File('${dir.path}/$localFileName');
@@ -76,7 +66,6 @@ class VideoCacheManager {
       print('Saved: ${file.path}');
       return file;
     } catch (e) {
-      print('Download failed: $e');
       return null;
     }
   }

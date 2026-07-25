@@ -26,9 +26,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   bool _isInitialized = false;
 
   Future<void> _initVideo() async {
-    try {
+    try { 
+      if (final File? file = await manager.getLocalVideo(widget.videoId) == null) {
       final File? file = await manager.downloadVideo(widget.videoUrl, widget.videoId);
-
+      }
+      
       if (file == null) {
         return;
       }
@@ -43,7 +45,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
           }
         });
     } catch (e) {
-      print('error');
+      return null;
     }
   }
   @override
