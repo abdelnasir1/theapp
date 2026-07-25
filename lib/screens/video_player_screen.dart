@@ -34,9 +34,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       File? file = await manager.getLocalVideo(widget.videoId);
 
       //download it
-      if ( file == null) {
-        final File? file = await manager.downloadVideo(widget.videoUrl, widget.videoId);
-      }
+      file ??= await manager.downloadVideo(widget.videoUrl, widget.videoId);
       if (file == null) {
         return;
       }
