@@ -94,33 +94,32 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       body: GestureDetector(
         onTap: _togglePlayPause,
         child: Center(
-          child: Stack(
-            alignment: Alignment.center,
-              children: [
-              // Your video
-              if (_controller.value.isInitialized)
-                SizedBox(
-                  width: double.infinity,
-                  child: AspectRatio(
-                    aspectRatio: _controller.value.aspectRatio,
-                    child: VideoPlayer(_controller),
+          child:
+             _controller.value.isInitialized?
+              Stack(
+              alignment: Alignment.center,
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    child: AspectRatio(
+                      aspectRatio: _controller.value.aspectRatio,
+                      child: VideoPlayer(_controller),
+                    ),
                   ),
-                )
-            else
-              const Center(child: CircularProgressIndicator()),
-
-      // Overlay icon for half a second
-             AnimatedOpacity(
-              opacity: _showIcon ? 1 : 0,
-              duration: const Duration(milliseconds: 100),
-              child: IgnorePointer(
-              child: Icon(
-               _isPlaying ? Icons.pause_circle_filled : Icons.play_circle_filled,
-                size: 72,
-                color: Colors.white.withOpacity(0.9),
-              ),
-          ),
-        ), ] )
+                  AnimatedOpacity(
+                    opacity: _showIcon ? 1 : 0,
+                    duration: const Duration(milliseconds: 100),
+                    child: IgnorePointer(
+                      child: Icon(
+                        _isPlaying ? Icons.pause_circle_filled : Icons.play_circle_filled,
+                        size: 72,
+                        color: Colors.white.withOpacity(0.9),
+                      )
+                    )
+                  )
+                ]
+              )
+             :Center(child: CircularProgressIndicator()),
         )
       )
     );
