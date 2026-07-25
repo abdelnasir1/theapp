@@ -1,4 +1,5 @@
 // screens/content/video_player_screen.dart
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -23,30 +24,56 @@ class VideoPlayerScreen extends StatefulWidget {
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   VideoCacheManager manager = VideoCacheManager();
   late VideoPlayerController _controller;
-  bool _isInitialized = false;
+  bool _showIcon = false;
+  Timer? _hideTimer;
+  bool _isPlaying = false;
 
   Future<void> _initVideo() async {
-    try { 
-      if (final File? file = await manager.getLocalVideo(widget.videoId) == null) {
-      final File? file = await manager.downloadVideo(widget.videoUrl, widget.videoId);
+    try {
+      //from storge
+      File? file = await manager.getLocalVideo(widget.videoId);
+
+      //download it
+      if ( file == null) {
+        final File? file = await manager.downloadVideo(widget.videoUrl, widget.videoId);
       }
-      
       if (file == null) {
         return;
       }
-
       _controller = VideoPlayerController.file(file)
         ..initialize().then((_) {
           if (mounted) {
             setState(() {
-              _isInitialized = true;
+              _isPlaying = _controller.value.isPlaying;
             });
-            _controller.play();
           }
+
         });
+      _controller.addListener(() {
+        if (!mounted) return;
+        setState(() => _isPlaying = _controller.value.isPlaying);
+      });
     } catch (e) {
-      return null;
+      return ;
     }
+  }
+
+  Future<void> _togglePlayPause() async {
+    if (!_controller.value.isInitialized) return;
+
+    if (_controller.value.isPlaying) {
+      await _controller.pause();
+    } else {
+      await _controller.play();
+    }
+
+    setState(() => _showIcon = true);
+
+    _hideTimer?.cancel();
+    _hideTimer = Timer(const Duration(milliseconds: 500), () {
+      if (!mounted) return;
+      setState(() => _showIcon = false);
+    });
   }
   @override
   void initState() {
@@ -58,6 +85,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   @override
   void dispose() {
+    _hideTimer?.cancel();
     _controller.dispose();
     super.dispose();
   }
@@ -65,50 +93,38 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Video Solution'),
-      ),
-      body: Center(
-        child: _isInitialized
-            ? Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            AspectRatio(
-              aspectRatio: _controller.value.aspectRatio,
-              child: VideoPlayer(_controller),
-            ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+      body: GestureDetector(
+        onTap: _togglePlayPause,
+        child: Center(
+          child: Stack(
+            alignment: Alignment.center,
               children: [
-                IconButton(
-                  icon: Icon(
-                    _controller.value.isPlaying
-                        ? Icons.pause
-                        : Icons.play_arrow,
-                    size: 40,
+              // Your video
+              if (_controller.value.isInitialized)
+                SizedBox(
+                  width: double.infinity,
+                  child: AspectRatio(
+                    aspectRatio: _controller.value.aspectRatio,
+                    child: VideoPlayer(_controller),
                   ),
-                  onPressed: () {
-                    setState(() {
-                      if (_controller.value.isPlaying) {
-                        _controller.pause();
-                      } else {
-                        _controller.play();
-                      }
-                    });
-                  },
-                ),
-                const SizedBox(width: 20),
-                Text(
-                  '${_controller.value.duration.inSeconds}s',
-                  style: const TextStyle(fontSize: 16),
-                ),
-              ],
-            ),
-          ],
+                )
+            else
+              const Center(child: CircularProgressIndicator()),
+
+      // Overlay icon for half a second
+             AnimatedOpacity(
+              opacity: _showIcon ? 1 : 0,
+              duration: const Duration(milliseconds: 100),
+              child: IgnorePointer(
+              child: Icon(
+               _isPlaying ? Icons.pause_circle_filled : Icons.play_circle_filled,
+                size: 72,
+                color: Colors.white.withOpacity(0.9),
+              ),
+          ),
+        ), ] )
         )
-            : const CircularProgressIndicator(),
-      ),
+      )
     );
   }
 }
