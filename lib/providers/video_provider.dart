@@ -1,7 +1,5 @@
 import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
-import '../services/supabase_service.dart';
 import '../config/constants.dart';
 import 'package:path_provider/path_provider.dart';
 

@@ -22,47 +22,51 @@ class VideoPlayerScreen extends StatefulWidget {
 
 
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
-  VideoCacheManager manager = VideoCacheManager();
-  late VideoPlayerController _controller;
+  final VideoCacheManager manager = VideoCacheManager();
+  VideoPlayerController? _controller;          // ← nullable, not late
+  bool _isReady = false;                       // ← new flag
   bool _showIcon = false;
   Timer? _hideTimer;
   bool _isPlaying = false;
 
   Future<void> _initVideo() async {
     try {
-      //from storge
       File? file = await manager.getLocalVideo(widget.videoId);
-
-      //download it
       file ??= await manager.downloadVideo(widget.videoUrl, widget.videoId);
-      if (file == null) {
+
+      if (file == null || !mounted) return;
+
+      final controller = VideoPlayerController.file(file);
+      await controller.initialize();
+
+      if (!mounted) {
+        controller.dispose();
         return;
       }
-      _controller = VideoPlayerController.file(file)
-        ..initialize().then((_) {
-          if (mounted) {
-            setState(() {
-              _isPlaying = _controller.value.isPlaying;
-            });
-          }
 
-        });
-      _controller.addListener(() {
+      controller.addListener(() {
         if (!mounted) return;
-        setState(() => _isPlaying = _controller.value.isPlaying);
+        setState(() => _isPlaying = controller.value.isPlaying);
+      });
+
+      setState(() {
+        _controller = controller;
+        _isReady = true;
+        _isPlaying = controller.value.isPlaying;
       });
     } catch (e) {
-      return ;
+      debugPrint('Video init error: $e');
     }
   }
 
   Future<void> _togglePlayPause() async {
-    if (!_controller.value.isInitialized) return;
+    final controller = _controller;
+    if (controller == null || !controller.value.isInitialized) return;
 
-    if (_controller.value.isPlaying) {
-      await _controller.pause();
+    if (controller.value.isPlaying) {
+      await controller.pause();
     } else {
-      await _controller.play();
+      await controller.play();
     }
 
     setState(() => _showIcon = true);
@@ -73,18 +77,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       setState(() => _showIcon = false);
     });
   }
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initVideo();
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _initVideo());
   }
 
   @override
   void dispose() {
     _hideTimer?.cancel();
-    _controller.dispose();
+    _controller?.dispose();          // safe now
     super.dispose();
   }
 
@@ -94,34 +97,36 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       body: GestureDetector(
         onTap: _togglePlayPause,
         child: Center(
-          child:
-             _controller.value.isInitialized?
-              Stack(
-              alignment: Alignment.center,
-                children: [
-                  SizedBox(
-                    width: double.infinity,
-                    child: AspectRatio(
-                      aspectRatio: _controller.value.aspectRatio,
-                      child: VideoPlayer(_controller),
-                    ),
+          child: _isReady && _controller != null
+              ? Stack(
+            alignment: Alignment.center,
+            children: [
+              SizedBox(
+                width: double.infinity,
+                child: AspectRatio(
+                  aspectRatio: _controller!.value.aspectRatio,
+                  child: VideoPlayer(_controller!),
+                ),
+              ),
+              AnimatedOpacity(
+                opacity: _showIcon ? 1 : 0,
+                duration: const Duration(milliseconds: 100),
+                child: IgnorePointer(
+                  child: Icon(
+                    _isPlaying
+                        ? Icons.pause_circle_filled
+                        : Icons.play_circle_filled,
+                    size: 72,
+                    color: Colors.white.withOpacity(0.9),
                   ),
-                  AnimatedOpacity(
-                    opacity: _showIcon ? 1 : 0,
-                    duration: const Duration(milliseconds: 100),
-                    child: IgnorePointer(
-                      child: Icon(
-                        _isPlaying ? Icons.pause_circle_filled : Icons.play_circle_filled,
-                        size: 72,
-                        color: Colors.white.withOpacity(0.9),
-                      )
-                    )
-                  )
-                ]
-              )
-             :Center(child: CircularProgressIndicator()),
-        )
-      )
+                ),
+              ),
+            ],
+          )
+              : const CircularProgressIndicator(),
+        ),
+      ),
     );
   }
 }
+
