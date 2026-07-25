@@ -30,8 +30,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       final File? file = await manager.downloadVideo(widget.videoUrl, widget.videoId);
 
       if (file == null) {
-        // Handle error (file not downloaded)
-        print('Failed to download video');
         return;
       }
 
@@ -45,7 +43,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
           }
         });
     } catch (e) {
-      print('Error initializing video: $e');
+      print('error');
     }
   }
   @override
