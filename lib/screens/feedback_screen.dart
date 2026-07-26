@@ -16,7 +16,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Feedback'),
+        title: const Text('التواصل مع الدعم'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
@@ -24,34 +24,19 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'We value your feedback!',
+              'ما هي مقترحاتك لتحسين التطبيق',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 20),
-            DropdownButtonFormField<int>(
-              decoration: const InputDecoration(
-                labelText: 'Rating',
-                border: OutlineInputBorder(),
-              ),
-              items: [5, 4, 3, 2, 1].map((rating) {
-                return DropdownMenuItem(
-                  value: rating,
-                  child: Text('$rating ${rating == 1 ? 'Star' : 'Stars'}'),
-                );
-              }).toList(),
-              onChanged: (value) {},
-            ),
-            const SizedBox(height: 20),
             TextField(
               controller: _feedbackController,
               maxLines: 5,
               decoration: const InputDecoration(
-                labelText: 'Your Feedback',
+                labelText: 'أقترح أن ....',
                 border: OutlineInputBorder(),
-                hintText: 'Tell us what you think...',
               ),
             ),
             const SizedBox(height: 20),
@@ -61,11 +46,11 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                 onPressed: () {
                   // Submit feedback
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Thank you for your feedback!')),
+                    const SnackBar(content: Text('شكراً للمقترحات سنعمل على تحسين التطبيق ')),
                   );
                   Navigator.pop(context);
                 },
-                child: const Text('Submit Feedback'),
+                child: const Text('إرسال'),
               ),
             ),
           ],

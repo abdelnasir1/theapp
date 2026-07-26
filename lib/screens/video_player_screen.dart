@@ -23,8 +23,8 @@ class VideoPlayerScreen extends StatefulWidget {
 
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   final VideoCacheManager manager = VideoCacheManager();
-  VideoPlayerController? _controller;          // ← nullable, not late
-  bool _isReady = false;                       // ← new flag
+  VideoPlayerController? _controller;
+  bool _isReady = false;
   bool _showIcon = false;
   Timer? _hideTimer;
   bool _isPlaying = false;

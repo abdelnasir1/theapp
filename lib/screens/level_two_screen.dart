@@ -54,7 +54,7 @@ class _LevelTwoScreenState extends State<LevelTwoScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sections'),
+        title: const Text('الباب'),
         actions: [
           IconButton(
             icon: Icon(_isGridView ? Icons.list : Icons.grid_view),
@@ -63,27 +63,6 @@ class _LevelTwoScreenState extends State<LevelTwoScreen> {
                 _isGridView = !_isGridView;
               });
             },
-          ),
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              setState(() {
-                _sortBy = value;
-              });
-            },
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'name',
-                child: Text('Sort by Name'),
-              ),
-              const PopupMenuItem(
-                value: 'popularity',
-                child: Text('Sort by Popularity'),
-              ),
-              const PopupMenuItem(
-                value: 'recent',
-                child: Text('Sort by Recent'),
-              ),
-            ],
           ),
         ],
       ),
@@ -94,7 +73,7 @@ class _LevelTwoScreenState extends State<LevelTwoScreen> {
             padding: const EdgeInsets.all(16),
             child: TextField(
               decoration: InputDecoration(
-                hintText: 'Search sections...',
+                hintText: 'ابحث عن باب ',
                 prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),

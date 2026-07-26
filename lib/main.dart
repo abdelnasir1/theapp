@@ -6,11 +6,13 @@ import 'config/theme.dart';
 import 'providers/auth_provider.dart';
 import 'providers/content_provider.dart';
 import 'providers/subscription_provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SupabaseConfig.initialize();
   runApp(const MyApp());
+
 }
 
 class MyApp extends StatelessWidget {
@@ -25,6 +27,17 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => SubscriptionProvider()),
       ],
       child: MaterialApp(
+      locale: const Locale('ar'),
+      supportedLocales: const [
+        Locale('ar'),
+        Locale('en'),
+      ],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      debugShowCheckedModeBanner: false,
         title: 'Math Solutions',
         theme: AppTheme.lightTheme,
         onGenerateRoute: AppRoutes.generateRoute,

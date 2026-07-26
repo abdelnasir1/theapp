@@ -33,151 +33,62 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
-        title: const Text('Math Solutions'),
-        actions: [
-          Consumer<SubscriptionProvider>(
-            builder: (context, subscriptionProvider, _) {
-              return Stack(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.notifications),
-                    onPressed: () {
-                      // Show notifications
-                    },
-                  ),
-                  if (!subscriptionProvider.hasActiveSubscription)
-                    Positioned(
-                      right: 8,
-                      top: 8,
-                      child: Container(
-                        padding: const EdgeInsets.all(2),
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        constraints: const BoxConstraints(
-                          minWidth: 12,
-                          minHeight: 12,
-                        ),
-                      ),
-                    ),
-                ],
-              );
-            },
+        elevation: 0,
+        backgroundColor: colorScheme.surface,
+        surfaceTintColor: Colors.transparent,
+        title: Text(
+          _currentIndex == 0
+              ? 'الرئيسية'
+              : _currentIndex == 1
+              ? 'المفضلة'
+              : 'الملف الشخصي',
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w700,
           ),
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              switch (value) {
-                case 'profile':
-                // Navigate to profile
-                  break;
-                case 'subscription':
-                  Navigator.pushNamed(context, '/payment');
-                  break;
-                case 'feedback':
-                  Navigator.pushNamed(context, '/feedback');
-                  break;
-                case 'privacy':
-                  Navigator.pushNamed(context, '/privacy-policy');
-                  break;
-                case 'logout':
-                  context.read<AuthProvider>().logout();
-                  Navigator.pushReplacementNamed(context, '/login');
-                  break;
-              }
-            },
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'profile',
-                child: Row(
-                  children: [
-                    Icon(Icons.person, size: 20),
-                    SizedBox(width: 8),
-                    Text('Profile'),
-                  ],
-                ),
-              ),
-              const PopupMenuItem(
-                value: 'subscription',
-                child: Row(
-                  children: [
-                    Icon(Icons.card_membership, size: 20),
-                    SizedBox(width: 8),
-                    Text('Subscription'),
-                  ],
-                ),
-              ),
-              const PopupMenuItem(
-                value: 'feedback',
-                child: Row(
-                  children: [
-                    Icon(Icons.feedback, size: 20),
-                    SizedBox(width: 8),
-                    Text('Feedback'),
-                  ],
-                ),
-              ),
-              const PopupMenuItem(
-                value: 'privacy',
-                child: Row(
-                  children: [
-                    Icon(Icons.privacy_tip, size: 20),
-                    SizedBox(width: 8),
-                    Text('Privacy Policy'),
-                  ],
-                ),
-              ),
-              const PopupMenuDivider(),
-              const PopupMenuItem(
-                value: 'logout',
-                child: Row(
-                  children: [
-                    Icon(Icons.logout, size: 20),
-                    SizedBox(width: 8),
-                    Text('Logout'),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
+        ),
+        centerTitle: true,
       ),
       body: _buildBody(),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _currentIndex,
+        onDestinationSelected: (index) {
           setState(() {
             _currentIndex = index;
           });
         },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home_rounded),
+            label: 'الرئيسية',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.menu_book),
-            label: 'Curriculum',
+          NavigationDestination(
+            icon: Icon(Icons.favorite_border_rounded),
+            selectedIcon: Icon(Icons.favorite_rounded),
+            label: 'المفضلة',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Favorites',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
+          NavigationDestination(
+            icon: Icon(Icons.person_outline_rounded),
+            selectedIcon: Icon(Icons.person_rounded),
+            label: 'الملف الشخصي',
           ),
         ],
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       floatingActionButton: _currentIndex == 0
           ? FloatingActionButton.extended(
         onPressed: () {
           Navigator.pushNamed(context, '/level-one');
         },
-        icon: const Icon(Icons.play_arrow),
-        label: const Text('Start Learning'),
+        icon: const Icon(Icons.play_arrow_rounded),
+        label: const Text('إبدأ المشاهدة'),
+        elevation: 4,
       )
           : null,
     );
@@ -188,10 +99,8 @@ class _HomeScreenState extends State<HomeScreen> {
       case 0:
         return _buildHomeTab();
       case 1:
-        return _buildCurriculumTab();
-      case 2:
         return _buildFavoritesTab();
-      case 3:
+      case 2:
         return _buildProfileTab();
       default:
         return _buildHomeTab();
@@ -201,13 +110,21 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildHomeTab() {
     return Consumer2<AuthProvider, SubscriptionProvider>(
       builder: (context, authProvider, subscriptionProvider, _) {
+        final theme = Theme.of(context);
+        final colorScheme = theme.colorScheme;
+
         return SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Welcome Card
               Card(
+                elevation: 0,
+                color: colorScheme.surfaceContainerLow,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(20),
                   child: Column(
@@ -216,13 +133,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       Row(
                         children: [
                           CircleAvatar(
-                            radius: 30,
-                            backgroundColor: Theme.of(context).primaryColor,
+                            radius: 32,
+                            backgroundColor: colorScheme.primary,
                             child: Text(
-                              authProvider.user?.fullName.substring(0, 1).toUpperCase() ?? 'U',
-                              style: const TextStyle(
-                                fontSize: 24,
-                                color: Colors.white,
+                              authProvider.user?.fullName
+                                  .substring(0, 1)
+                                  .toUpperCase() ??
+                                  'U',
+                              style: theme.textTheme.headlineSmall?.copyWith(
+                                color: colorScheme.onPrimary,
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
                           ),
@@ -232,17 +152,18 @@ class _HomeScreenState extends State<HomeScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Welcome back,',
-                                  style: TextStyle(
-                                    color: Colors.grey[600],
-                                    fontSize: 14,
-                                  ),
-                                ),
-                                Text(
                                   authProvider.user?.fullName ?? 'User',
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
+                                  style: theme.textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'مرحباً بك',
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                               ],
@@ -250,25 +171,36 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 20),
                       if (subscriptionProvider.hasActiveSubscription)
                         Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.green.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.green.withOpacity(0.3)),
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
                           ),
-                          child: Row(
+                          decoration: BoxDecoration(
+                            color: Colors.green.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: Colors.green.withValues(alpha: 0.25),
+                            ),
+                          ),
+                          child: const Row(
                             children: [
-                              const Icon(Icons.check_circle, color: Colors.green),
-                              const SizedBox(width: 8),
+                              Icon(
+                                Icons.check_circle_rounded,
+                                color: Colors.green,
+                                size: 22,
+                              ),
+                              SizedBox(width: 10),
                               Expanded(
                                 child: Text(
                                   'Premium Active',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     color: Colors.green,
-                                    fontWeight: FontWeight.w500,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 15,
                                   ),
                                 ),
                               ),
@@ -277,29 +209,41 @@ class _HomeScreenState extends State<HomeScreen> {
                         )
                       else
                         Container(
-                          padding: const EdgeInsets.all(12),
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 12,
+                          ),
                           decoration: BoxDecoration(
-                            color: Colors.orange.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.orange.withOpacity(0.3)),
+                            color: Colors.orange.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: Colors.orange.withValues(alpha: 0.25),
+                            ),
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.warning, color: Colors.orange),
-                              const SizedBox(width: 8),
+                              const Icon(
+                                Icons.workspace_premium_rounded,
+                                color: Colors.orange,
+                                size: 22,
+                              ),
+                              const SizedBox(width: 10),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     const Text(
-                                      'Free Account',
+                                      'حساب مجاني',
                                       style: TextStyle(
                                         color: Colors.orange,
-                                        fontWeight: FontWeight.bold,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 14,
                                       ),
                                     ),
+                                    const SizedBox(height: 2),
                                     Text(
-                                      'Upgrade to access all content',
+                                      'قم بالترقية لمشاهدة كل الدروس',
                                       style: TextStyle(
                                         color: Colors.grey[600],
                                         fontSize: 12,
@@ -308,11 +252,24 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ],
                                 ),
                               ),
-                              TextButton(
+                              FilledButton.tonal(
                                 onPressed: () {
                                   Navigator.pushNamed(context, '/payment');
                                 },
-                                child: const Text('Upgrade'),
+                                style: FilledButton.styleFrom(
+                                  backgroundColor:
+                                  Colors.orange.withValues(alpha: 0.2),
+                                  foregroundColor: Colors.orange.shade800,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 14,
+                                    vertical: 8,
+                                  ),
+                                  visualDensity: VisualDensity.compact,
+                                ),
+                                child: const Text(
+                                  'ترقية',
+                                  style: TextStyle(fontWeight: FontWeight.w600),
+                                ),
                               ),
                             ],
                           ),
@@ -321,52 +278,52 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
 
               // Quick Stats
+              Text(
+                'إحصائياتك',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 12),
               Row(
                 children: [
                   Expanded(
                     child: _buildStatCard(
                       'Videos Watched',
                       '0',
-                      Icons.play_circle,
+                      Icons.play_circle_filled_rounded,
                       Colors.blue,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
 
               // Featured Categories
-              const Text(
-                'Popular Topics',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+              Text(
+                'أبواب رائجة',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 14),
               SizedBox(
-                height: 120,
+                height: 130,
                 child: ListView(
                   scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
                   children: [
-                    _buildTopicChip('Algebra', Icons.functions, Colors.blue),
-                    _buildTopicChip('Geometry', Icons.category, Colors.green),
-                    _buildTopicChip('Calculus', Icons.trending_up, Colors.orange),
-                    _buildTopicChip('Statistics', Icons.bar_chart, Colors.purple),
+                    _buildTopicChip('Algebra', Icons.functions_rounded, Colors.blue),
+                    _buildTopicChip(
+                        'Geometry', Icons.category_rounded, Colors.green),
+                    _buildTopicChip(
+                        'Calculus', Icons.trending_up_rounded, Colors.orange),
+                    _buildTopicChip(
+                        'Statistics', Icons.bar_chart_rounded, Colors.purple),
                   ],
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // Recent Activity
-              const Text(
-                'إنتقل للفيديوهات',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
                 ),
               ),
             ],
@@ -376,113 +333,61 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildCurriculumTab() {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Math Curriculum',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Choose your topic and start learning',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[600],
-            ),
-          ),
-          const SizedBox(height: 24),
-          Expanded(
-            child: GridView.count(
-              crossAxisCount: 2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: 1.2,
-              children: [
-                _buildCurriculumCard(
-                  'Algebra',
-                  'Equations, functions, and graphs',
-                  Icons.functions,
-                  Colors.blue,
-                ),
-                _buildCurriculumCard(
-                  'Geometry',
-                  'Shapes, angles, and proofs',
-                  Icons.category,
-                  Colors.green,
-                ),
-                _buildCurriculumCard(
-                  'Calculus',
-                  'Limits, derivatives, and integrals',
-                  Icons.trending_up,
-                  Colors.orange,
-                ),
-                _buildCurriculumCard(
-                  'Statistics',
-                  'Data analysis and probability',
-                  Icons.bar_chart,
-                  Colors.purple,
-                ),
-                _buildCurriculumCard(
-                  'Trigonometry',
-                  'Angles and triangles',
-                  Icons.architecture,
-                  Colors.red,
-                ),
-                _buildCurriculumCard(
-                  'Number Theory',
-                  'Properties of numbers',
-                  Icons.numbers,
-                  Colors.teal,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildFavoritesTab() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.favorite_border,
-            size: 80,
-            color: Colors.grey[400],
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'No favorites yet',
-            style: TextStyle(
-              fontSize: 18,
-              color: Colors.grey[600],
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 110,
+              height: 110,
+              decoration: BoxDecoration(
+                color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.favorite_border_rounded,
+                size: 52,
+                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+              ),
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Start adding videos to your favorites',
-            style: TextStyle(color: Colors.grey[500]),
-          ),
-          const SizedBox(height: 24),
-          ElevatedButton.icon(
-            onPressed: () {
-              setState(() {
-                _currentIndex = 1;
-              });
-            },
-            icon: const Icon(Icons.explore),
-            label: const Text('Explore Videos'),
-          ),
-        ],
+            const SizedBox(height: 24),
+            Text(
+              'لا يوجد مفضلة بعد',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'ابدأ باستكشاف الفيديوهات وأضف ما يعجبك إلى المفضلة',
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
+              ),
+            ),
+            const SizedBox(height: 28),
+            FilledButton.icon(
+              onPressed: () {
+                Navigator.pushNamed(context, '/level-one');
+              },
+              icon: const Icon(Icons.explore_rounded),
+              label: const Text('إستكشف الفيديوهات'),
+              style: FilledButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 14,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -493,99 +398,142 @@ class _HomeScreenState extends State<HomeScreen> {
         final user = authProvider.user;
         if (user == null) return const SizedBox();
 
+        final theme = Theme.of(context);
+        final colorScheme = theme.colorScheme;
+
         return SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 40),
           child: Column(
             children: [
-              const SizedBox(height: 20),
-              CircleAvatar(
-                radius: 50,
-                backgroundColor: Theme.of(context).primaryColor,
-                child: Text(
-                  user.fullName.substring(0, 1).toUpperCase(),
-                  style: const TextStyle(fontSize: 40, color: Colors.white),
+              // Profile Header
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 28),
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceContainerLow,
+                  borderRadius: BorderRadius.circular(24),
                 ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                user.fullName,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                user.email,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
+                child: Column(
+                  children: [
+                    CircleAvatar(
+                      radius: 48,
+                      backgroundColor: colorScheme.primary,
+                      child: Text(
+                        user.fullName.substring(0, 1).toUpperCase(),
+                        style: theme.textTheme.displaySmall?.copyWith(
+                          color: colorScheme.onPrimary,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      user.fullName,
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      user.email,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 24),
-              ListTile(
-                leading: const Icon(Icons.card_membership),
-                title: const Text('Subscription Plan'),
-                subtitle: Text(
-                  user.isSubscribed ? 'Premium' : 'Free',
-                  style: TextStyle(
-                    color: user.isSubscribed ? Colors.green : Colors.orange,
-                  ),
-                ),
-                trailing: const Icon(Icons.chevron_right),
+
+              // Account Status Card
+              _buildProfileTile(
+                icon: Icons.card_membership_rounded,
+                title: 'حالة الحساب',
+                subtitle: user.isSubscribed ? 'مدفوع' : 'مجاني',
+                subtitleColor:
+                user.isSubscribed ? Colors.green : Colors.orange,
                 onTap: () {
                   Navigator.pushNamed(context, '/payment');
                 },
               ),
-              ListTile(
-                leading: const Icon(Icons.history),
-                title: const Text('Watch History'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () {
-                  // Navigate to history
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.settings),
-                title: const Text('Settings'),
-                trailing: const Icon(Icons.chevron_right),
+              _buildProfileTile(
+                icon: Icons.settings_rounded,
+                title: 'الإعدادات',
                 onTap: () {
                   // Navigate to settings
                 },
               ),
-              ListTile(
-                leading: const Icon(Icons.help),
-                title: const Text('Help & Support'),
-                trailing: const Icon(Icons.chevron_right),
+              _buildProfileTile(
+                icon: Icons.lock_rounded,
+                title: 'الخصوصية و الأمان ',
                 onTap: () {
-                  // Navigate to help
+                  Navigator.pushNamed(context, '/privacy-policy');
                 },
               ),
-              const Divider(),
+              _buildProfileTile(
+                icon: Icons.help_outline_rounded,
+                title: 'التواصل مع الدعم',
+                onTap: () {
+                  Navigator.pushNamed(context, '/feedback');
+                },
+              ),
+              const SizedBox(height: 12),
+              const Divider(height: 1),
+              const SizedBox(height: 8),
+
+              // Logout
               ListTile(
-                leading: const Icon(Icons.logout, color: Colors.red),
+                contentPadding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                leading: Container(
+                  width: 42,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    color: Colors.red.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.logout_rounded,
+                    color: Colors.red,
+                    size: 22,
+                  ),
+                ),
                 title: const Text(
-                  'Logout',
-                  style: TextStyle(color: Colors.red),
+                  'تسجيل الخروج',
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
                 ),
                 onTap: () {
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
-                      title: const Text('Logout'),
-                      content: const Text('Are you sure you want to logout?'),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      title: const Text('تسجيل الخروج'),
+                      content: const Text(
+                          'هل أنت متأكد من رغبتك في تسجيل الخروج ؟'),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(context),
-                          child: const Text('Cancel'),
+                          child: const Text('إلغاء'),
                         ),
-                        TextButton(
+                        FilledButton(
                           onPressed: () {
                             Navigator.pop(context);
                             authProvider.logout();
                             Navigator.pushReplacementNamed(context, '/login');
                           },
-                          child: const Text('Logout', style: TextStyle(color: Colors.red)),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: Colors.red,
+                            foregroundColor: Colors.white,
+                          ),
+                          child: const Text('تسجيل خروج'),
                         ),
                       ],
                     ),
@@ -599,27 +547,43 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Helper widgets
-  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
+  // ─── Helper Widgets ───────────────────────────────────────────────────────
+
+  Widget _buildStatCard(
+      String title, String value, IconData icon, Color color) {
+    final theme = Theme.of(context);
+
     return Card(
+      elevation: 0,
+      color: color.withValues(alpha: 0.08),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+        side: BorderSide(color: color.withValues(alpha: 0.15)),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
         child: Column(
           children: [
-            Icon(icon, color: color, size: 32),
-            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.15),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: color, size: 28),
+            ),
+            const SizedBox(height: 12),
             Text(
               value,
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w800,
               ),
             ),
+            const SizedBox(height: 4),
             Text(
               title,
-              style: TextStyle(
+              style: theme.textTheme.bodySmall?.copyWith(
                 color: Colors.grey[600],
-                fontSize: 12,
               ),
               textAlign: TextAlign.center,
             ),
@@ -631,75 +595,100 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildTopicChip(String title, IconData icon, Color color) {
     return Padding(
-      padding: const EdgeInsets.only(right: 12),
-      child: InkWell(
-        onTap: () {
-          Navigator.pushNamed(context, '/level-one');
-        },
-        child: Container(
-          width: 100,
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: color.withOpacity(0.3)),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, color: color, size: 32),
-              const SizedBox(height: 8),
-              Text(
-                title,
-                style: TextStyle(
-                  color: color,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
+      padding: const EdgeInsets.only(right: 14),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            Navigator.pushNamed(context, '/level-one');
+          },
+          borderRadius: BorderRadius.circular(18),
+          child: Ink(
+            width: 110,
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: color.withValues(alpha: 0.22)),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.18),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(icon, color: color, size: 28),
                 ),
-                textAlign: TextAlign.center,
-              ),
-            ],
+                const SizedBox(height: 10),
+                Text(
+                  title,
+                  style: TextStyle(
+                    color: color,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildCurriculumCard(String title, String subtitle, IconData icon, Color color) {
+  Widget _buildProfileTile({
+    required IconData icon,
+    required String title,
+    String? subtitle,
+    Color? subtitleColor,
+    required VoidCallback onTap,
+  }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Card(
-      elevation: 4,
-      child: InkWell(
-        onTap: () {
-          Navigator.pushNamed(context, '/level-one');
-        },
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Expanded(child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, color: color, size: 40),
-              const SizedBox(height: 12),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                subtitle,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[600],
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
+      elevation: 0,
+      margin: const EdgeInsets.only(bottom: 10),
+      color: colorScheme.surfaceContainerLow,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: ListTile(
+        contentPadding:
+        const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        leading: Container(
+          width: 42,
+          height: 42,
+          decoration: BoxDecoration(
+            color: colorScheme.primary.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(12),
           ),
-          )
+          child: Icon(icon, color: colorScheme.primary, size: 22),
         ),
+        title: Text(
+          title,
+          style: theme.textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        subtitle: subtitle != null
+            ? Text(
+          subtitle,
+          style: TextStyle(
+            color: subtitleColor,
+            fontWeight: FontWeight.w500,
+            fontSize: 13,
+          ),
+        )
+            : null,
+        trailing: Icon(
+          Icons.chevron_right_rounded,
+          color: colorScheme.onSurfaceVariant,
+        ),
+        onTap: onTap,
       ),
     );
   }

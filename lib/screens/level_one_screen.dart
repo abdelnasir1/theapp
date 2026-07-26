@@ -24,14 +24,6 @@ class _LevelOneScreenState extends State<LevelOneScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('أختار المقرر'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.account_circle),
-            onPressed: () {
-              // Navigate to profile
-            },
-          ),
-        ],
       ),
       body: Consumer<ContentProvider>(
         builder: (context, provider, _) {
