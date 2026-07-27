@@ -14,7 +14,6 @@ class LevelTwoScreen extends StatefulWidget {
 
 class _LevelTwoScreenState extends State<LevelTwoScreen> {
   String _searchQuery = '';
-  String _sortBy = 'name'; // 'name', 'popularity', 'recent'
   bool _isGridView = true;
 
   @override
@@ -25,7 +24,7 @@ class _LevelTwoScreenState extends State<LevelTwoScreen> {
     });
   }
 
-  List<dynamic> _filterAndSortCategories(List<dynamic> categories) {
+  List<dynamic> _filterCategories(List<dynamic> categories) {
     var filtered = categories;
 
     // Apply search filter
@@ -36,17 +35,6 @@ class _LevelTwoScreenState extends State<LevelTwoScreen> {
     }
 
     // Apply sorting
-    switch (_sortBy) {
-      case 'name':
-        filtered.sort((a, b) => a.name.compareTo(b.name));
-        break;
-      case 'recent':
-      // Assuming there's a createdAt field
-        filtered.sort((a, b) => (b.createdAt ?? DateTime.now()).compareTo(a.createdAt ?? DateTime.now()));
-        break;
-    // Add more sorting options as needed
-    }
-
     return filtered;
   }
 
@@ -105,7 +93,7 @@ class _LevelTwoScreenState extends State<LevelTwoScreen> {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                final categories = _filterAndSortCategories(
+                final categories = _filterCategories(
                   provider.levelTwoCategories,
                 );
 
@@ -120,10 +108,7 @@ class _LevelTwoScreenState extends State<LevelTwoScreen> {
                           color: Colors.grey[400],
                         ),
                         const SizedBox(height: 16),
-                        Text(
-                          _searchQuery.isNotEmpty
-                              ? 'No sections found for "$_searchQuery"'
-                              : 'No sections available',
+                        Text( 'لا يوجد باب بهذا الإسم "$_searchQuery"',
                           style: TextStyle(
                             fontSize: 18,
                             color: Colors.grey[600],

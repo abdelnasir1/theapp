@@ -26,7 +26,7 @@ class _LevelThreeScreenState extends State<LevelThreeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Video Lessons'),
+        title: const Text('أمثلة الباب'),
       ),
       body: Consumer2<ContentProvider, SubscriptionProvider>(
         builder: (context, contentProvider, subscriptionProvider, _) {
@@ -71,7 +71,7 @@ class _LevelThreeScreenState extends State<LevelThreeScreen> {
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: const Text(
-                              'PRO',
+                              'مدفوع',
                               style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
@@ -85,7 +85,6 @@ class _LevelThreeScreenState extends State<LevelThreeScreen> {
                     video.title,
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  subtitle: Text(video.description ?? 'No description'),
                   trailing: canAccess
                       ? const Icon(Icons.play_arrow)
                       : const Icon(Icons.lock),
@@ -117,21 +116,21 @@ class _LevelThreeScreenState extends State<LevelThreeScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Premium Content'),
+        title: const Text('محتوى مدفوع'),
         content: const Text(
-          'This video is premium content. Subscribe to access all videos.',
+          'هذا المثال ضمن المحتوى المدفوع قم بالترقية لمشاهته'
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const Text('إلغاء'),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
               Navigator.pushNamed(context, '/payment');
             },
-            child: const Text('Subscribe Now'),
+            child: const Text('ترقية'),
           ),
         ],
       ),
