@@ -35,13 +35,26 @@ class _PaymentScreenState extends State<PaymentScreen> {
         'Priority feature requests',
       ],
     },
+    'monthly': {
+      'name': 'monthly',
+      'price': '7000', 'duration': '12 months',
+      'icon': Icons.calendar_today,
+      'color': Colors.purple,
+      'savings': 'Save 75%',
+      'features': [
+        'All Quarterly features',
+        'Early access to new content',
+        'Exclusive webinars',
+        'Priority feature requests',
+      ],
+    },
   };
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Subscription Plans'),
+        title: const Text('ترقية الحساب'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -49,24 +62,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header
-            const Text(
-              'Choose Your Plan',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Unlock all math solution videos and features',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey[600],
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // Plan Cards
             ..._plans.entries.map((entry) {
               final planKey = entry.key;
               final plan = entry.value;
@@ -113,13 +108,17 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Expanded(child:Row(
+                                  Row(
                                     children: [
-                                      Text(
-                                        plan['name'] as String,
-                                        style: const TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
+                                      Flexible(
+                                        child: Text(
+                                          plan['name'] as String,
+                                          style: const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
                                         ),
                                       ),
                                       if (plan.containsKey('savings'))
@@ -146,7 +145,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                           ),
                                         ),
                                     ],
-                                  )),
+                                  ),
                                   const SizedBox(height: 4),
                                   Text(
                                     plan['duration'] as String,

@@ -118,7 +118,7 @@ class _LevelThreeScreenState extends State<LevelThreeScreen> {
       builder: (context) => AlertDialog(
         title: const Text('محتوى مدفوع'),
         content: const Text(
-          'هذا المثال ضمن المحتوى المدفوع قم بالترقية لمشاهته'
+          'هذا المثال ضمن المحتوى المدفوع قم بالترقية لمشاهدته'
         ),
         actions: [
           TextButton(

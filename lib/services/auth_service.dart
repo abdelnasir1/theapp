@@ -6,6 +6,8 @@ import '../models/user_model.dart';
 class AuthService {
   final SupabaseClient _supabase = Supabase.instance.client;
 
+  final GoogleSignIn googleSignIn = GoogleSignIn.instance;
+
   // ====================== EMAIL / PASSWORD ======================
 
   Future<UserModel> login(String email, String password) async {
@@ -58,33 +60,30 @@ class AuthService {
 
   Future<UserModel> signInWithGoogle() async {
     try {
-      // 1. Trigger Google Sign-In
-      final GoogleSignIn googleSignIn = GoogleSignIn(
-        // Optional: add serverClientId if you configured it in Google Cloud
-        // serverClientId: 'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com',
+
+      await googleSignIn.initialize(
+        serverClientId: '362341234733-htfp79eq8f08gaucu8kk10tbci647aus.apps.googleusercontent.com',
       );
 
-      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      final GoogleSignInAccount account = await googleSignIn.authenticate();
 
-      if (googleUser == null) {
-        throw Exception('تم إلغاء تسجيل الدخول بجوجل');
-      }
+      final authentication = await account.authentication;
 
-      final GoogleSignInAuthentication googleAuth =
-      await googleUser.authentication;
-
-      final accessToken = googleAuth.accessToken;
-      final idToken = googleAuth.idToken;
+      final idToken = authentication.idToken;
 
       if (idToken == null) {
         throw Exception('فشل الحصول على Google ID Token');
       }
 
+      //the new api
+      final clientAuth = await account.authorizationClient.authorizeScopes(['email','profile']);
+
       // 2. Sign in to Supabase with the Google ID Token
+
       final response = await _supabase.auth.signInWithIdToken(
         provider: OAuthProvider.google,
         idToken: idToken,
-        accessToken: accessToken,
+        accessToken: clientAuth.accessToken,
       );
 
       if (response.user == null) {
@@ -137,9 +136,7 @@ class AuthService {
 
   Future<void> logout() async {
     // Also sign out from Google
-    final GoogleSignIn googleSignIn = GoogleSignIn();
     await googleSignIn.signOut();
-
     await _supabase.auth.signOut();
   }
 }

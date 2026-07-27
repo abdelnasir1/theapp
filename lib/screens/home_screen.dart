@@ -173,7 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                       const SizedBox(height: 20),
-                      if (subscriptionProvider.hasActiveSubscription)
+                      if (authProvider.user!.isSubscribed)
                         Container(
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(
@@ -197,7 +197,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               SizedBox(width: 10),
                               Expanded(
                                 child: Text(
-                                  'Premium Active',
+                                  'حساب مدفوع',
                                   style: TextStyle(
                                     color: Colors.green,
                                     fontWeight: FontWeight.w600,
