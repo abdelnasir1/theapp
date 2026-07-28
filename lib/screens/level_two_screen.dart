@@ -105,13 +105,13 @@ class _LevelTwoScreenState extends State<LevelTwoScreen> {
                         Icon(
                           Icons.search_off,
                           size: 64,
-                          color: Colors.grey[400],
+                          color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                         ),
                         const SizedBox(height: 16),
                         Text( 'لا يوجد باب بهذا الإسم "$_searchQuery"',
                           style: TextStyle(
                             fontSize: 18,
-                            color: Colors.grey[600],
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -179,7 +179,7 @@ class _LevelTwoScreenState extends State<LevelTwoScreen> {
               flex: 3,
               child: Container(
                 decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor.withOpacity(0.1),
+                  color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.2),
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(12),
                   ),
@@ -188,7 +188,7 @@ class _LevelTwoScreenState extends State<LevelTwoScreen> {
                   child: Icon(
                     _getCategoryIcon(category.name),
                     size: 48,
-                    color: Theme.of(context).primaryColor,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ),
@@ -228,14 +228,14 @@ class _LevelTwoScreenState extends State<LevelTwoScreen> {
                         Text(
                           '12 videos', // You can add video count to your model
                           style: TextStyle(
-                            color: Colors.grey[500],
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                             fontSize: 11,
                           ),
                         ),
                         Icon(
                           Icons.arrow_forward_ios,
                           size: 14,
-                          color: Theme.of(context).primaryColor,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                       ],
                     ),
@@ -257,12 +257,12 @@ class _LevelTwoScreenState extends State<LevelTwoScreen> {
           width: 60,
           height: 60,
           decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor.withOpacity(0.1),
+            color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(
             _getCategoryIcon(category.name),
-            color: Theme.of(context).primaryColor,
+            color: Theme.of(context).colorScheme.primary,
             size: 30,
           ),
         ),
@@ -290,13 +290,13 @@ class _LevelTwoScreenState extends State<LevelTwoScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.grey[100],
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
                 '12', // Video count
                 style: TextStyle(
-                  color: Colors.grey[600],
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                   fontSize: 12,
                 ),
               ),

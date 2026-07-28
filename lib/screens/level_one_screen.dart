@@ -55,10 +55,20 @@ class _LevelOneScreenState extends State<LevelOneScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
-                        Icons.menu_book,
-                        size: 50,
-                        color: Theme.of(context).primaryColor,
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primaryContainer
+                              .withValues(alpha: 0.3),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.menu_book,
+                          size: 40,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                       ),
                       const SizedBox(height: 12),
                       Padding(

@@ -1,7 +1,8 @@
-// screens/payment/payment_screen.dart
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../config/constants.dart';
 import 'dart:io';
 import '../../providers/auth_provider.dart';
 import '../../providers/subscription_provider.dart';
@@ -18,216 +19,180 @@ class _PaymentScreenState extends State<PaymentScreen> {
   final PaymentService _paymentService = PaymentService();
   final ImagePicker _imagePicker = ImagePicker();
   File? _receiptImage;
-  String _selectedPlan = 'monthly';
   bool _isProcessing = false;
-
-  final Map<String, Map<String, dynamic>> _plans = {
-    'yearly': {
-      'name': 'Yearly',
-      'price': '7000', 'duration': '12 months',
-      'icon': Icons.calendar_today,
-      'color': Colors.purple,
-      'savings': 'Save 75%',
-      'features': [
-        'All Quarterly features',
-        'Early access to new content',
-        'Exclusive webinars',
-        'Priority feature requests',
-      ],
-    },
-    'monthly': {
-      'name': 'monthly',
-      'price': '7000', 'duration': '12 months',
-      'icon': Icons.calendar_today,
-      'color': Colors.purple,
-      'savings': 'Save 75%',
-      'features': [
-        'All Quarterly features',
-        'Early access to new content',
-        'Exclusive webinars',
-        'Priority feature requests',
-      ],
-    },
-  };
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('ترقية الحساب'),
-      ),
+      appBar: AppBar(title: const Text('ترقية الحساب')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
-        child: Column(
+        child: context.watch<SubscriptionProvider>().hasActiveSubscription == false?
+        Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header
-            ..._plans.entries.map((entry) {
-              final planKey = entry.key;
-              final plan = entry.value;
-              final isSelected = _selectedPlan == planKey;
-
-              return Card(
-                margin: const EdgeInsets.only(bottom: 16),
-                elevation: isSelected ? 8 : 2,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  side: BorderSide(
-                    color: isSelected ? plan['color'] : Colors.transparent,
-                    width: isSelected ? 2 : 0,
-                  ),
-                ),
-                child: InkWell(
-                  onTap: () {
-                    setState(() {
-                      _selectedPlan = planKey;
-                    });
-                  },
-                  borderRadius: BorderRadius.circular(16),
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: (plan['color'] as Color).withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Icon(
-                                plan['icon'] as IconData,
-                                color: plan['color'],
-                                size: 28,
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Flexible(
-                                        child: Text(
-                                          plan['name'] as String,
-                                          style: const TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 1,
-                                        ),
-                                      ),
-                                      if (plan.containsKey('savings'))
-                                        Container(
-                                          margin: const EdgeInsets.only(left: 8),
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 8,
-                                            vertical: 2,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: Colors.amber.withOpacity(0.2),
-                                            borderRadius: BorderRadius.circular(12),
-                                            border: Border.all(
-                                              color: Colors.amber.withOpacity(0.5),
-                                            ),
-                                          ),
-                                          child: Text(
-                                            plan['savings'] as String,
-                                            style: const TextStyle(
-                                              color: Colors.amber,
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    plan['duration'] as String,
-                                    style: TextStyle(
-                                      color: Colors.grey[600],
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text(
-                                  '\$${plan['price']}',
-                                  style: TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: plan['color'],
-                                  ),
-                                ),
-                                Text(
-                                  '/${plan['duration']}',
-                                  style: TextStyle(
-                                    color: Colors.grey[500],
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(width: 8),
-                            Radio<String>(
-                              value: planKey,
-                              groupValue: _selectedPlan,
-                              onChanged: (value) {
-                                setState(() {
-                                  _selectedPlan = value!;
-                                });
-                              },
-                              activeColor: plan['color'],
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        const Divider(),
-                        const SizedBox(height: 8),
-                        ...List.generate(
-                          (plan['features'] as List<String>).length,
-                              (index) => Padding(
-                            padding: const EdgeInsets.only(bottom: 4),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.check_circle,
-                                  color: plan['color'],
-                                  size: 16,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  (plan['features'] as List<String>)[index],
-                                  style: const TextStyle(fontSize: 14),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
+            const SizedBox(height: 16),
+            const Text(
+              'مبلغ الأشتراك',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.green.withAlpha(20),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.green.withAlpha(100)),
+              ),
+              child: const Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(height: 8),
+                  Text(
+                    AppConstants.SubscriptionPrices,
+                    style: TextStyle(
+                      fontSize: 20,
+                      letterSpacing: 8,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
-              );
-            }),
-
+                  SizedBox(height: 7),
+                  Text(
+                    'جنيه سوداني',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(height: 24),
-
-            // Receipt Upload Section
             const Text(
-              'Upload Payment Receipt',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+              'طريقة الدفع',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.grey.withAlpha(20),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.blue.withAlpha(30)),
+              ),
+              child: const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '1.حول مبلغ الإشتراك على حساب بنكك التالي',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.green.withAlpha(20),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.green.withAlpha(100)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.copy, size: 18),
+                    onPressed: () {
+                      Clipboard.setData(
+                        const ClipboardData(
+                          text: '${AppConstants.accountnumber}',
+                        ),
+                      );
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(const SnackBar(content: Text('تم النسخ')));
+                    },
+                  ),
+                  const SizedBox(height: 8, width: 26),
+                  const SelectableText(
+                    '${AppConstants.accountnumber}',
+                    style: TextStyle(
+                      fontSize: 20,
+                      letterSpacing: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    'بأسم : معاذ خيال',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.red.withAlpha(20),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.red.withAlpha(30)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'تأكد من حفظ الإيصال عن طريق زر التحميل',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                  Container(
+                    width: double.infinity,
+                    height: 130,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(17),
+                      image: const DecorationImage(
+                        image: AssetImage('assets/images/download_image.jpg'),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.grey.withAlpha(20),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.blue.withAlpha(30)),
+              ),
+              child: const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '2.قم بتحميل الإيصال هنا',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 16),
@@ -252,32 +217,18 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       ),
                     )
                   else
-                    Icon(
-                      Icons.receipt_long,
-                      size: 64,
-                      color: Colors.grey[400],
-                    ),
+                    Icon(Icons.receipt_long, size: 64, color: Colors.grey[400]),
                   const SizedBox(height: 12),
                   Text(
                     _receiptImage != null
                         ? 'Receipt uploaded successfully'
                         : 'Upload your payment receipt',
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                    ),
+                    style: TextStyle(color: Colors.grey[600]),
                   ),
                   const SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      ElevatedButton.icon(
-                        onPressed: _pickReceiptImage,
-                        icon: const Icon(Icons.camera_alt),
-                        label: const Text('Take Photo'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                        ),
-                      ),
                       const SizedBox(width: 12),
                       ElevatedButton.icon(
                         onPressed: _pickReceiptImage,
@@ -289,43 +240,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
 
-            // Payment Instructions
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.blue.withOpacity(0.2)),
-              ),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(Icons.info, color: Colors.blue, size: 20),
-                      SizedBox(width: 8),
-                      Text(
-                        'Payment Instructions',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 8),
-                  Text('1.حول مبلغ الإشتراك على الحساب التالي'),
-                  Text('2.حمل إيصال  بنكك على هاتفك'),
-                  Text('3. أرسل الإيصال على أعلاه'),
-                  Text('4. نحن سنتأكد من صلاحية الإشعار '),
-                ],
-              ),
-            ),
             const SizedBox(height: 24),
-
-            // Process Payment Button
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -341,28 +257,28 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 ),
                 child: _isProcessing
                     ? const SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                )
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
+                        ),
+                      )
                     : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.lock),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Pay \$${_plans[_selectedPlan]!['price']} - ${_plans[_selectedPlan]!['name']}',
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                  ],
-                ),
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.lock),
+                          const SizedBox(width: 8),
+                          Text('أدفع', style: const TextStyle(fontSize: 16)),
+                        ],
+                      ),
               ),
             ),
           ],
-        ),
+        )
+       : isSup()
       ),
     );
   }
@@ -382,9 +298,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to pick image: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to pick image: $e')));
       }
     }
   }
@@ -401,7 +317,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
       if (userId == null) throw Exception('User not authenticated');
 
       // Upload receipt and process payment
-      final receiptUrl = await _paymentService.uploadReceipt(userId, _receiptImage!);
+      final receiptUrl = await _paymentService.uploadReceipt(
+        userId,
+        _receiptImage!,
+      );
 
       final result = await _paymentService.processPayment(
         userId: userId,
@@ -431,3 +350,36 @@ class _PaymentScreenState extends State<PaymentScreen> {
     }
   }
 }
+
+  Widget isSup() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 16),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.green.withAlpha(20),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.green.withAlpha(100)),
+          ),
+          child: const Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(height: 8),
+              Text(
+                'تم ترقية الحساب بنجاح',
+                style: TextStyle(
+                  fontSize: 20,
+                  letterSpacing: 8,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 7),
+            ],
+          ),
+        ),
+      ],
+    );
+  }

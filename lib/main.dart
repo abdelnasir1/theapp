@@ -6,6 +6,7 @@ import 'config/theme.dart';
 import 'providers/auth_provider.dart';
 import 'providers/content_provider.dart';
 import 'providers/subscription_provider.dart';
+import 'providers/theme_provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
@@ -25,23 +26,30 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => ContentProvider()),
         ChangeNotifierProvider(create: (_) => SubscriptionProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
       ],
-      child: MaterialApp(
-      locale: const Locale('ar'),
-      supportedLocales: const [
-        Locale('ar'),
-        Locale('en'),
-      ],
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ],
-      debugShowCheckedModeBanner: false,
-        title: 'Math Solutions',
-        theme: AppTheme.lightTheme,
-        onGenerateRoute: AppRoutes.generateRoute,
-        initialRoute: '/splash',
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
+          return MaterialApp(
+            locale: const Locale('ar'),
+            supportedLocales: const [
+              Locale('ar'),
+              Locale('en'),
+            ],
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+            ],
+            debugShowCheckedModeBanner: false,
+            title: 'maaz solutions',
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeProvider.themeMode,
+            onGenerateRoute: AppRoutes.generateRoute,
+            initialRoute: '/home',
+          );
+        },
       ),
     );
   }
