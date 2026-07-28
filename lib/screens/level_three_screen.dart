@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../providers/content_provider.dart';
 import '../../providers/subscription_provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/favorites_provider.dart';
 
 class LevelThreeScreen extends StatefulWidget {
   final String categoryId;
@@ -29,8 +30,8 @@ class _LevelThreeScreenState extends State<LevelThreeScreen> {
       appBar: AppBar(
         title: const Text('أمثلة الباب'),
       ),
-      body: Consumer2<ContentProvider, SubscriptionProvider>(
-        builder: (context, contentProvider, subscriptionProvider, _) {
+      body: Consumer3<ContentProvider, SubscriptionProvider, FavoritesProvider>(
+        builder: (context, contentProvider, subscriptionProvider, favoritesProvider, _) {
           if (contentProvider.isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
@@ -43,6 +44,7 @@ class _LevelThreeScreenState extends State<LevelThreeScreen> {
               final canAccess = subscriptionProvider.canAccessContent(
                 video.isPremium,
               );
+              final isFav = favoritesProvider.isFavorite(video.id);
 
               return Card(
                 clipBehavior: Clip.antiAlias,
@@ -107,6 +109,34 @@ class _LevelThreeScreenState extends State<LevelThreeScreen> {
                                   : Icons.lock_rounded,
                               size: 40,
                               color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        // Favorite Toggle
+                        Positioned(
+                          top: 12,
+                          left: 12,
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {
+                                favoritesProvider.toggleFavorite(video);
+                              },
+                              borderRadius: BorderRadius.circular(20),
+                              child: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withValues(alpha: 0.3),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  isFav
+                                      ? Icons.favorite_rounded
+                                      : Icons.favorite_border_rounded,
+                                  color: isFav ? Colors.red : Colors.white,
+                                  size: 20,
+                                ),
+                              ),
                             ),
                           ),
                         ),

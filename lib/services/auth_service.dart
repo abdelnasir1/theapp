@@ -1,4 +1,5 @@
 // services/auth_service.dart
+import 'package:flutter/cupertino.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../models/user_model.dart';
@@ -136,7 +137,12 @@ class AuthService {
 
   Future<void> logout() async {
     // Also sign out from Google
-    await googleSignIn.signOut();
     await _supabase.auth.signOut();
+    try {
+      await googleSignIn.signOut();
+    }catch (e) {
+      debugPrint(e as String?);
+    }
+
   }
 }

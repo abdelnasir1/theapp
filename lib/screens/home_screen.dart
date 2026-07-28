@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/subscription_provider.dart';
 import '../../providers/theme_provider.dart';
+import '../../providers/favorites_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -153,7 +154,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  authProvider.user?.fullName ?? 'Anonymous',
+                                  authProvider.user?.fullName ?? 'زائر',
                                   style: theme.textTheme.titleLarge?.copyWith(
                                     fontWeight: FontWeight.w700,
                                   ),
@@ -200,7 +201,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'حساب زائر (Anonymous)',
+                                      'حساب زائر ',
                                       style: TextStyle(
                                         color: Colors.blue,
                                         fontWeight: FontWeight.w700,
@@ -402,60 +403,173 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildFavoritesTab() {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    return Consumer2<FavoritesProvider, SubscriptionProvider>(
+      builder: (context, favoritesProvider, subscriptionProvider, _) {
+        final favorites = favoritesProvider.favoriteVideos;
+        final theme = Theme.of(context);
+        final colorScheme = theme.colorScheme;
 
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 110,
-              height: 110,
-              decoration: BoxDecoration(
-                color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.favorite_border_rounded,
-                size: 52,
-                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+        if (favorites.isEmpty) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 110,
+                    height: 110,
+                    decoration: BoxDecoration(
+                      color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.favorite_border_rounded,
+                      size: 52,
+                      color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'لا يوجد مفضلة بعد',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'ابدأ باستكشاف الفيديوهات وأضف ما يعجبك إلى المفضلة',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
+                    ),
+                  ),
+                  const SizedBox(height: 28),
+                  FilledButton.icon(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/level-one');
+                    },
+                    icon: const Icon(Icons.explore_rounded),
+                    label: const Text('إستكشف الفيديوهات'),
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 14,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 24),
-            Text(
-              'لا يوجد مفضلة بعد',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'ابدأ باستكشاف الفيديوهات وأضف ما يعجبك إلى المفضلة',
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
-              ),
-            ),
-            const SizedBox(height: 28),
-            FilledButton.icon(
-              onPressed: () {
-                Navigator.pushNamed(context, '/level-one');
-              },
-              icon: const Icon(Icons.explore_rounded),
-              label: const Text('إستكشف الفيديوهات'),
-              style: FilledButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 14,
+          );
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: favorites.length,
+          itemBuilder: (context, index) {
+            final video = favorites[index];
+            final canAccess = subscriptionProvider.canAccessContent(video.isPremium);
+
+            return Card(
+              clipBehavior: Clip.antiAlias,
+              margin: const EdgeInsets.only(bottom: 16),
+              elevation: 2,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+              child: InkWell(
+                onTap: () {
+                  if (!canAccess) {
+                    _showSubscriptionDialog(context);
+                  } else {
+                    Navigator.pushNamed(
+                      context,
+                      '/video-player',
+                      arguments: {
+                        'videoId': video.id,
+                        'videoUrl': video.videoUrl,
+                      },
+                    );
+                  }
+                },
+                child: AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      if (video.thumbnailUrl != null && video.thumbnailUrl!.isNotEmpty)
+                        Image.network(video.thumbnailUrl!, fit: BoxFit.cover)
+                      else
+                        Container(
+                          color: colorScheme.surfaceContainerHighest,
+                          child: const Icon(Icons.image_outlined, size: 50, color: Colors.grey),
+                        ),
+                      // Remove Favorite
+                      Positioned(
+                        top: 12,
+                        left: 12,
+                        child: IconButton.filledTonal(
+                          onPressed: () => favoritesProvider.toggleFavorite(video),
+                          icon: const Icon(Icons.favorite_rounded, color: Colors.red),
+                        ),
+                      ),
+                      Center(
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.4),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            canAccess ? Icons.play_arrow_rounded : Icons.lock_rounded,
+                            size: 32,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      if (video.isPremium)
+                        Positioned(
+                          top: 12,
+                          right: 12,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.amber.shade700,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: const Text(
+                              'مدفوع',
+                              style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showSubscriptionDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('محتوى مدفوع'),
+        content: const Text('هذا المثال ضمن المحتوى المدفوع قم بالترقية لمشاهدته'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('إلغاء')),
+          FilledButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, '/payment');
+            },
+            child: const Text('ترقية'),
+          ),
+        ],
       ),
     );
   }
@@ -636,7 +750,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           onPressed: () {
                             Navigator.pop(context);
                             authProvider.logout();
-                            Navigator.pushReplacementNamed(context, '/login');
+                            Navigator.pushReplacementNamed(context, '/home');
                           },
                           style: FilledButton.styleFrom(
                             backgroundColor: Colors.red,
