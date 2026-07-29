@@ -5,13 +5,18 @@ import '../models/content_model.dart';
 
 class FavoritesProvider with ChangeNotifier {
   List<Video> _favoriteVideos = [];
-  static const String _favoritesKey = 'favorite_videos';
-
-  FavoritesProvider() {
-    _loadFavorites();
-  }
+  String? _userId;
 
   List<Video> get favoriteVideos => _favoriteVideos;
+
+  void setUserId(String? userId) {
+    if (_userId != userId) {
+      _userId = userId;
+      _loadFavorites();
+    }
+  }
+
+  String get _favoritesKey => _userId == null ? 'guest_favorites' : 'favorites_$_userId';
 
   bool isFavorite(String videoId) {
     return _favoriteVideos.any((v) => v.id == videoId);
@@ -28,14 +33,21 @@ class FavoritesProvider with ChangeNotifier {
     await _saveFavorites();
   }
 
+  void clearLocal() {
+    _favoriteVideos = [];
+    notifyListeners();
+  }
+
   Future<void> _loadFavorites() async {
     final prefs = await SharedPreferences.getInstance();
     final String? favoritesJson = prefs.getString(_favoritesKey);
     if (favoritesJson != null) {
       final List<dynamic> decoded = jsonDecode(favoritesJson);
       _favoriteVideos = decoded.map((item) => Video.fromJson(item)).toList();
-      notifyListeners();
+    } else {
+      _favoriteVideos = [];
     }
+    notifyListeners();
   }
 
   Future<void> _saveFavorites() async {

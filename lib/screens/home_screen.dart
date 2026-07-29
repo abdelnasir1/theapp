@@ -41,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: colorScheme.surface,
       appBar: AppBar(
-        automaticallyImplyLeading: false,   // ← add this line
+        automaticallyImplyLeading: false,
         elevation: 0,
         backgroundColor: colorScheme.surface,
         surfaceTintColor: Colors.transparent,
@@ -119,9 +119,10 @@ class _HomeScreenState extends State<HomeScreen> {
         return SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
           child: Column(
+
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Welcome Card
+              const SizedBox(height: 21),
               Card(
                 elevation: 0,
                 color: colorScheme.surfaceContainerLow,
@@ -347,35 +348,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 28),
-
-              // Quick Stats
-              Text(
-                'إحصائياتك',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildStatCard(
-                      'Videos Watched',
-                      '0',
-                      Icons.play_circle_filled_rounded,
-                      Colors.blue,
-                    ),
+              const SizedBox(height: 32),
+              Container(
+                alignment:Alignment.center,
+                child: Text(
+                  'الأعلى مشاهدة',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
                   ),
-                ],
-              ),
-              const SizedBox(height: 28),
-
-              // Featured Categories
-              Text(
-                'أبواب رائجة',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
                 ),
               ),
               const SizedBox(height: 14),

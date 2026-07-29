@@ -3,15 +3,20 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ThemeProvider with ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.light;
-  static const String _themeKey = 'theme_mode';
-
-  ThemeProvider() {
-    _loadTheme();
-  }
+  String? _userId;
 
   ThemeMode get themeMode => _themeMode;
 
   bool get isDarkMode => _themeMode == ThemeMode.dark;
+
+  void setUserId(String? userId) {
+    if (_userId != userId) {
+      _userId = userId;
+      _loadTheme();
+    }
+  }
+
+  String get _themeKey => _userId == null ? 'guest_theme_mode' : 'theme_mode_$_userId';
 
   void toggleTheme(bool isOn) {
     _themeMode = isOn ? ThemeMode.dark : ThemeMode.light;
@@ -27,7 +32,8 @@ class ThemeProvider with ChangeNotifier {
 
   Future<void> _loadTheme() async {
     final prefs = await SharedPreferences.getInstance();
-    final themeIndex = prefs.getInt(_themeKey) ?? 1; // 0: system, 1: light, 2: dark
+    // Default to Light (1) if no preference found
+    final themeIndex = prefs.getInt(_themeKey) ?? 1;
     _themeMode = ThemeMode.values[themeIndex];
     notifyListeners();
   }

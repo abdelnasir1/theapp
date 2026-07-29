@@ -136,13 +136,17 @@ class AuthService {
   }
 
   Future<void> logout() async {
-    // Also sign out from Google
-    await _supabase.auth.signOut();
-    try {
-      await googleSignIn.signOut();
-    }catch (e) {
-      debugPrint(e as String?);
-    }
+    final user =_supabase.auth.currentUser;
+    final provider = user?.appMetadata['provider'] as String?;
+    final isGoogleUser = provider == 'google';
 
+    if (isGoogleUser) {
+      try {
+        await googleSignIn.signOut();
+      } catch (e) {
+        debugPrint('Google sign-out error: $e');
+      }
+    }
+    await _supabase.auth.signOut();
   }
 }

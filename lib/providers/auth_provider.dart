@@ -1,5 +1,6 @@
 // providers/auth_provider.dart
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
 
@@ -72,6 +73,12 @@ class AuthProvider with ChangeNotifier {
   Future<void> logout() async {
     await _authService.logout();
     _user = null;
+    
+    // Clear guest data from SharedPreferences on logout
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('guest_favorites');
+    await prefs.remove('guest_theme_mode');
+
     notifyListeners();
   }
 
