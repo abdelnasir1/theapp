@@ -162,9 +162,9 @@ class _LevelThreeScreenState extends State<LevelThreeScreen> {
                               child: const Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(Icons.workspace_premium_rounded,
+                                   Icon(Icons.workspace_premium_rounded,
                                       color: Colors.white, size: 14),
-                                  const SizedBox(width: 4),
+                                   SizedBox(width: 4),
                                   Text(
                                     'مدفوع',
                                     style: TextStyle(

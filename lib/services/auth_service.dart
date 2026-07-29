@@ -68,7 +68,7 @@ class AuthService {
 
       final GoogleSignInAccount account = await googleSignIn.authenticate();
 
-      final authentication = await account.authentication;
+      final authentication =  account.authentication;
 
       final idToken = authentication.idToken;
 

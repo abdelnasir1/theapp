@@ -181,8 +181,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 _passwordController.text,
                               );
                               if (success && mounted) {
-                                Navigator.pushReplacementNamed(
-                                    context, '/home');
+                                Navigator.pushReplacementNamed( context, '/home');
                               } else if (mounted) {
                                 ScaffoldMessenger.of(context)
                                     .showSnackBar(
@@ -265,7 +264,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         'https://www.google.com/favicon.ico',
                         height: 22,
                         width: 22,
-                        errorBuilder: (_, __, ___) =>
+                        errorBuilder: (_, _, _) =>
                         const Icon(Icons.g_mobiledata, size: 28),
                       ),
                       label: const Text(

@@ -32,7 +32,7 @@ class SubscriptionBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: (isSubscribed ? Colors.green : Colors.orange).withOpacity(0.3),
+            color: (isSubscribed ? Colors.green : Colors.orange).withAlpha(30),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -62,7 +62,7 @@ class SubscriptionBadge extends StatelessWidget {
                   Text(
                     '$daysRemaining days remaining',
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.8),
+                      color: Colors.white.withAlpha(80),
                       fontSize: 12,
                     ),
                   ),

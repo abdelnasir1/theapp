@@ -48,10 +48,10 @@ class _SignupScreenState extends State<SignupScreen> {
                     width: 110,
                     height: 110,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor.withOpacity(0.1),
+                      color: Theme.of(context).primaryColor.withAlpha(10),
                       borderRadius: BorderRadius.circular(24),
                       border: Border.all(
-                        color: Theme.of(context).primaryColor.withOpacity(0.2),
+                        color: Theme.of(context).primaryColor.withAlpha(20),
                         width: 2,
                       ),
                     ),
@@ -369,7 +369,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         'https://www.google.com/favicon.ico',
                         height: 22,
                         width: 22,
-                        errorBuilder: (_, __, ___) =>
+                        errorBuilder: (_, _, _) =>
                         const Icon(Icons.g_mobiledata, size: 28),
                       ),
                       label: const Text(

@@ -756,7 +756,6 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (context) {
         return Consumer<ThemeProvider>(
           builder: (context, themeProvider, _) {
-            final theme = Theme.of(context);
             return AlertDialog(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
@@ -838,50 +837,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // ─── Helper Widgets ───────────────────────────────────────────────────────
-
-  Widget _buildStatCard(
-      String title, String value, IconData icon, Color color) {
-    final theme = Theme.of(context);
-
-    return Card(
-      elevation: 0,
-      color: color.withValues(alpha: 0.08),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(18),
-        side: BorderSide(color: color.withValues(alpha: 0.15)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.15),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, color: color, size: 28),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              value,
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              title,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: Colors.grey[600],
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   Widget _buildTopicChip(String title, IconData icon, Color color) {
     return Padding(

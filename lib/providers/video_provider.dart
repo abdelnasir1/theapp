@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../config/constants.dart';
 import 'package:path_provider/path_provider.dart';
@@ -34,7 +35,7 @@ class VideoCacheManager {
     final toDelete = videos.sublist(0, videos.length - maxVideos); // Oldest ones
     for (var file in toDelete) {
       await file.delete();
-      print('Deleted old video: ${file.path}');
+      debugPrint('Deleted old video: ${file.path}');
     }
   }
   String getPathFromUrl(String url) {
@@ -60,7 +61,7 @@ class VideoCacheManager {
       final file = File('${dir.path}/$localFileName');
       await file.writeAsBytes(response);
 
-      print('Saved: ${file.path}');
+      debugPrint('Saved: ${file.path}');
       return file;
     } catch (e) {
       return null;

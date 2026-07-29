@@ -1,7 +1,6 @@
 // services/ocr_service.dart
 import 'dart:convert';
 import 'dart:io';
-import 'package:http/http.dart' as http;
 
 class OCRService {
   // This is a placeholder for actual OCR service integration

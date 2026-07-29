@@ -10,7 +10,6 @@ class FeedbackScreen extends StatefulWidget {
 
 class _FeedbackScreenState extends State<FeedbackScreen> {
   final _feedbackController = TextEditingController();
-  final _ratingController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {

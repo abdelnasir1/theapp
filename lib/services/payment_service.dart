@@ -21,9 +21,6 @@ class PaymentService {
       throw Exception('Failed to upload receipt: ${e.toString()}');
     }
   }
-  Future<int>GetPrice() async {
-    throw Exception("something");
-  }
   Future<Map<String, dynamic>> processPayment({
     required String userId,
     required String receiptUrl,
