@@ -4,10 +4,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/content_model.dart';
 
 class FavoritesProvider with ChangeNotifier {
-  List<Video> _favoriteVideos = [];
+  List<Example> _favoriteExamples = [];
   String? _userId;
 
-  List<Video> get favoriteVideos => _favoriteVideos;
+  List<Example> get favoriteExamples => _favoriteExamples;
 
   void setUserId(String? userId) {
     if (_userId != userId) {
@@ -18,23 +18,23 @@ class FavoritesProvider with ChangeNotifier {
 
   String get _favoritesKey => _userId == null ? 'guest_favorites' : 'favorites_$_userId';
 
-  bool isFavorite(String videoId) {
-    return _favoriteVideos.any((v) => v.id == videoId);
+  bool isFavorite(String exampleId) {
+    return _favoriteExamples.any((v) => v.id == exampleId);
   }
 
-  Future<void> toggleFavorite(Video video) async {
-    final index = _favoriteVideos.indexWhere((v) => v.id == video.id);
+  Future<void> toggleFavorite(Example example) async {
+    final index = _favoriteExamples.indexWhere((v) => v.id == example.id);
     if (index >= 0) {
-      _favoriteVideos.removeAt(index);
+      _favoriteExamples.removeAt(index);
     } else {
-      _favoriteVideos.add(video);
+      _favoriteExamples.add(example);
     }
     notifyListeners();
     await _saveFavorites();
   }
 
   void clearLocal() {
-    _favoriteVideos = [];
+    _favoriteExamples = [];
     notifyListeners();
   }
 
@@ -43,9 +43,9 @@ class FavoritesProvider with ChangeNotifier {
     final String? favoritesJson = prefs.getString(_favoritesKey);
     if (favoritesJson != null) {
       final List<dynamic> decoded = jsonDecode(favoritesJson);
-      _favoriteVideos = decoded.map((item) => Video.fromJson(item)).toList();
+      _favoriteExamples = decoded.map((item) => Example.fromJson(item)).toList();
     } else {
-      _favoriteVideos = [];
+      _favoriteExamples = [];
     }
     notifyListeners();
   }
@@ -53,7 +53,7 @@ class FavoritesProvider with ChangeNotifier {
   Future<void> _saveFavorites() async {
     final prefs = await SharedPreferences.getInstance();
     final String encoded = jsonEncode(
-      _favoriteVideos.map((v) => v.toJson()).toList(),
+      _favoriteExamples.map((v) => v.toJson()).toList(),
     );
     await prefs.setString(_favoritesKey, encoded);
   }

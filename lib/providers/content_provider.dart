@@ -8,18 +8,21 @@ class ContentProvider with ChangeNotifier {
 
   List<Category> _levelOneCategories = [];
   List<Category> _levelTwoCategories = [];
-  List<Video> _videos = [];
+  List<Category> _levelThreeCategories = [];
+  List<Category> _levelFourCategories = [];
+  List<Example> _examples = [];
   bool _isLoading = false;
 
   List<Category> get levelOneCategories => _levelOneCategories;
   List<Category> get levelTwoCategories => _levelTwoCategories;
-  List<Video> get videos => _videos;
+  List<Category> get levelThreeCategories => _levelThreeCategories;
+  List<Category> get levelFourCategories => _levelFourCategories;
+  List<Example> get examples => _examples;
   bool get isLoading => _isLoading;
 
   Future<void> fetchLevelOneCategories() async {
     _isLoading = true;
     notifyListeners();
-
     try {
       _levelOneCategories = await _supabaseService.getCategories(level: 1);
       _isLoading = false;
@@ -34,12 +37,9 @@ class ContentProvider with ChangeNotifier {
   Future<void> fetchLevelTwoCategories(String parentId) async {
     _isLoading = true;
     notifyListeners();
-
     try {
-      _levelTwoCategories = await _supabaseService.getCategories(
-        level: 2,
-        parentId: parentId,
-      );
+      _levelTwoCategories =
+          await _supabaseService.getCategories(level: 2, parentId: parentId);
       _isLoading = false;
       notifyListeners();
     } catch (e) {
@@ -49,12 +49,41 @@ class ContentProvider with ChangeNotifier {
     }
   }
 
-  Future<void> fetchVideos(String categoryId) async {
+  Future<void> fetchLevelThreeCategories(String parentId) async {
     _isLoading = true;
     notifyListeners();
-
     try {
-      _videos = await _supabaseService.getVideos(categoryId);
+      _levelThreeCategories =
+          await _supabaseService.getCategories(level: 3, parentId: parentId);
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      rethrow;
+    }
+  }
+
+  Future<void> fetchLevelFourCategories(String parentId) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      _levelFourCategories =
+          await _supabaseService.getCategories(level: 4, parentId: parentId);
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      rethrow;
+    }
+  }
+
+  Future<void> fetchExamples(String categoryId) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      _examples = await _supabaseService.getExamples(categoryId);
       _isLoading = false;
       notifyListeners();
     } catch (e) {
@@ -64,6 +93,3 @@ class ContentProvider with ChangeNotifier {
     }
   }
 }
-
-
-

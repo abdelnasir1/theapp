@@ -1,31 +1,24 @@
 // models/content_model.dart
+
 class Category {
   final String id;
   final String name;
-  final String? description;
   final int level;
   final String? parentId;
-  final DateTime? createdAt;
 
   Category({
     required this.id,
     required this.name,
-    this.description,
     required this.level,
     this.parentId,
-    this.createdAt,
   });
 
   factory Category.fromJson(Map<String, dynamic> json) {
     return Category(
       id: json['id'] ?? '',
       name: json['name'] ?? '',
-      description: json['description'],
       level: json['level'] ?? 1,
       parentId: json['parent_id'],
-      createdAt: json['created_at'] != null
-          ? DateTime.parse(json['created_at'])
-          : null,
     );
   }
 
@@ -33,64 +26,120 @@ class Category {
     return {
       'id': id,
       'name': name,
-      'description': description,
       'level': level,
       'parent_id': parentId,
-      'created_at': createdAt?.toIso8601String(),
+    };
+  }
+}
+
+class Solution {
+  final String label;
+  final bool isCorrect;
+
+  const Solution({
+    required this.label,
+    required this.isCorrect,
+  });
+
+  factory Solution.fromJson(Map<String, dynamic> json) {
+    return Solution(
+      label: json['label'] ?? '',
+      isCorrect: json['is_correct'] ?? false,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'label': label,
+      'is_correct': isCorrect,
     };
   }
 }
 
 class Video {
   final String id;
-  final String title;
-  final String? description;
   final String videoUrl;
-  final String? thumbnailUrl;
-  final int duration;
-  final String categoryId;
   final bool isPremium;
-  final DateTime? createdAt;
 
   Video({
     required this.id,
-    required this.title,
-    this.description,
     required this.videoUrl,
-    this.thumbnailUrl,
-    this.duration = 30,
-    required this.categoryId,
     this.isPremium = true,
-    this.createdAt,
   });
 
   factory Video.fromJson(Map<String, dynamic> json) {
     return Video(
       id: json['id'] ?? '',
-      title: json['title'] ?? '',
-      description: json['description'],
       videoUrl: json['video_url'] ?? '',
-      thumbnailUrl: json['thumbnail_url'],
-      duration: json['duration'] ?? 30,
-      categoryId: json['category_id'] ?? '',
       isPremium: json['is_premium'] ?? true,
-      createdAt: json['created_at'] != null
-          ? DateTime.parse(json['created_at'])
-          : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'title': title,
-      'description': description,
       'video_url': videoUrl,
-      'thumbnail_url': thumbnailUrl,
-      'duration': duration,
-      'category_id': categoryId,
       'is_premium': isPremium,
-      'created_at': createdAt?.toIso8601String(),
+    };
+  }
+}
+
+class Example {
+  final String id;
+  final String name;
+  final String? parentCategory;
+  final String questionImageUrl;
+  final String? videoId;
+  final List<Solution> solutions;
+  final Video? video;
+
+  Example({
+    required this.id,
+    required this.name,
+    this.parentCategory,
+    required this.questionImageUrl,
+    this.videoId,
+    this.solutions = const [],
+    this.video,
+  });
+
+  factory Example.fromJson(Map<String, dynamic> json) {
+    // Parse solutions from the 'options' JSON column
+    var solutionsList = <Solution>[];
+    if (json['options'] != null) {
+      if (json['options'] is List) {
+        solutionsList = (json['options'] as List)
+            .map((s) => Solution.fromJson(s as Map<String, dynamic>))
+            .toList();
+      } else if (json['options'] is Map) {
+        // Alternative format: {"أ": true, "ب": false}
+        final Map<String, dynamic> optionsMap = json['options'];
+        solutionsList = optionsMap.entries
+            .map((e) => Solution(label: e.key, isCorrect: e.value == true))
+            .toList();
+      }
+    }
+
+    return Example(
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      parentCategory: json['parent_category'],
+      questionImageUrl: json['question_image_url'] ?? '',
+      videoId: json['video_id'],
+      solutions: solutionsList,
+      video: json['videos'] != null ? Video.fromJson(json['videos']) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'parent_category': parentCategory,
+      'question_image_url': questionImageUrl,
+      'video_id': videoId,
+      'options': solutions.map((s) => s.toJson()).toList(),
+      'videos': video?.toJson(),
     };
   }
 }

@@ -167,7 +167,10 @@ class _LevelTwoScreenState extends State<LevelTwoScreen> {
           Navigator.pushNamed(
             context,
             '/level-three',
-            arguments: {'categoryId': category.id},
+            arguments: {
+              'categoryId': category.id,
+              'categoryName': category.name,
+            },
           );
         },
         borderRadius: BorderRadius.circular(12),
@@ -211,16 +214,6 @@ class _LevelTwoScreenState extends State<LevelTwoScreen> {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 4),
-                    if (category.description != null)
-                      Text(
-                        category.description!,
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 12,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
                     const Spacer(),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -273,17 +266,6 @@ class _LevelTwoScreenState extends State<LevelTwoScreen> {
             fontSize: 16,
           ),
         ),
-        subtitle: category.description != null
-            ? Padding(
-          padding: const EdgeInsets.only(top: 4),
-          child: Text(
-            category.description!,
-            style: TextStyle(color: Colors.grey[600]),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        )
-            : null,
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -312,7 +294,10 @@ class _LevelTwoScreenState extends State<LevelTwoScreen> {
           Navigator.pushNamed(
             context,
             '/level-three',
-            arguments: {'categoryId': category.id},
+            arguments: {
+              'categoryId': category.id,
+              'categoryName': category.name,
+            },
           );
         },
       ),
@@ -327,7 +312,7 @@ class _LevelTwoScreenState extends State<LevelTwoScreen> {
         return Icons.functions;
       case 'polynomials':
         return Icons.assessment;
-      case 'inequalities':
+      case 'مبدأ العد':
         return Icons.compare_arrows;
       case 'functions':
         return Icons.transform;
@@ -341,11 +326,11 @@ class _LevelTwoScreenState extends State<LevelTwoScreen> {
         return Icons.grid_on;
       case 'determinants':
         return Icons.calculate;
-      case 'trigonometry':
+      case 'دائرة':
         return Icons.architecture;
       case 'geometry':
         return Icons.category;
-      case 'statistics':
+      case 'إحصاء':
         return Icons.bar_chart;
       case 'probability':
         return Icons.pie_chart;

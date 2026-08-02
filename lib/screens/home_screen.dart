@@ -39,62 +39,62 @@ class _HomeScreenState extends State<HomeScreen> {
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        elevation: 0,
-        backgroundColor: colorScheme.surface,
-        surfaceTintColor: Colors.transparent,
-        title: Text(
-          _currentIndex == 0
-              ? 'الرئيسية'
-              : _currentIndex == 1
-              ? 'المفضلة'
-              : 'الملف الشخصي',
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w700,
+      
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          elevation: 0,
+          backgroundColor: colorScheme.surface,
+          surfaceTintColor: Colors.transparent,
+          title: Text(
+            _currentIndex == 0
+                ? 'الرئيسية'
+                : _currentIndex == 1
+                ? 'المفضلة'
+                : 'الملف الشخصي',
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
           ),
+          centerTitle: true,
         ),
-        centerTitle: true,
-      ),
-      body: _buildBody(),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _currentIndex,
-        onDestinationSelected: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home_rounded),
-            label: 'الرئيسية',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.favorite_border_rounded),
-            selectedIcon: Icon(Icons.favorite_rounded),
-            label: 'المفضلة',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outline_rounded),
-            selectedIcon: Icon(Icons.person_rounded),
-            label: 'الملف الشخصي',
-          ),
-        ],
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
-      floatingActionButton: _currentIndex == 0
-          ? FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.pushNamed(context, '/level-one');
-        },
-        icon: const Icon(Icons.play_arrow_rounded),
-        label: const Text('إبدأ المشاهدة'),
-        elevation: 4,
-      )
-          : null,
-    );
+        body: _buildBody(),
+        bottomNavigationBar: NavigationBar(
+          selectedIndex: _currentIndex,
+          onDestinationSelected: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.home_outlined),
+              selectedIcon: Icon(Icons.home_rounded),
+              label: 'الرئيسية',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.favorite_border_rounded),
+              selectedIcon: Icon(Icons.favorite_rounded),
+              label: 'المفضلة',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.person_outline_rounded),
+              selectedIcon: Icon(Icons.person_rounded),
+              label: 'الملف الشخصي',
+            ),
+          ],
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+        floatingActionButton: _currentIndex == 0
+            ? FloatingActionButton.extended(
+          onPressed: () {
+            Navigator.pushNamed(context, '/level-one');
+          },
+          icon: const Icon(Icons.play_arrow_rounded),
+          label: const Text('إبدأ المشاهدة'),
+          elevation: 4,
+        )
+            : null,
+      );
   }
 
   Widget _buildBody() {
@@ -385,7 +385,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildFavoritesTab() {
     return Consumer2<FavoritesProvider, SubscriptionProvider>(
       builder: (context, favoritesProvider, subscriptionProvider, _) {
-        final favorites = favoritesProvider.favoriteVideos;
+        final favorites = favoritesProvider.favoriteExamples;
         final theme = Theme.of(context);
         final colorScheme = theme.colorScheme;
 
@@ -419,7 +419,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'ابدأ باستكشاف الفيديوهات وأضف ما يعجبك إلى المفضلة',
+                    'ابدأ باستكشاف التمارين وأضف ما يعجبك إلى المفضلة',
                     textAlign: TextAlign.center,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
@@ -431,7 +431,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Navigator.pushNamed(context, '/level-one');
                     },
                     icon: const Icon(Icons.explore_rounded),
-                    label: const Text('إستكشف الفيديوهات'),
+                    label: const Text('إستكشف التمارين'),
                     style: FilledButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 24,
@@ -449,8 +449,9 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: const EdgeInsets.all(16),
           itemCount: favorites.length,
           itemBuilder: (context, index) {
-            final video = favorites[index];
-            final canAccess = subscriptionProvider.canAccessContent(video.isPremium);
+            final example = favorites[index];
+            final canAccess = subscriptionProvider.canAccessContent(
+                example.video?.isPremium ?? true);
 
             return Card(
               clipBehavior: Clip.antiAlias,
@@ -464,10 +465,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   } else {
                     Navigator.pushNamed(
                       context,
-                      '/video-player',
+                      '/example-page',
                       arguments: {
-                        'videoId': video.id,
-                        'videoUrl': video.videoUrl,
+                        'examples': favorites,
+                        'index': index,
                       },
                     );
                   }
@@ -477,19 +478,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
-                      if (video.thumbnailUrl != null && video.thumbnailUrl!.isNotEmpty)
-                        Image.network(video.thumbnailUrl!, fit: BoxFit.cover)
-                      else
-                        Container(
-                          color: colorScheme.surfaceContainerHighest,
-                          child: const Icon(Icons.image_outlined, size: 50, color: Colors.grey),
-                        ),
+                      Image.network(example.questionImageUrl, fit: BoxFit.cover),
                       // Remove Favorite
                       Positioned(
                         top: 12,
                         left: 12,
                         child: IconButton.filledTonal(
-                          onPressed: () => favoritesProvider.toggleFavorite(video),
+                          onPressed: () => favoritesProvider.toggleFavorite(example),
                           icon: const Icon(Icons.favorite_rounded, color: Colors.red),
                         ),
                       ),
@@ -501,13 +496,13 @@ class _HomeScreenState extends State<HomeScreen> {
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
-                            canAccess ? Icons.play_arrow_rounded : Icons.lock_rounded,
+                            canAccess ? Icons.question_answer_rounded : Icons.lock_rounded,
                             size: 32,
                             color: Colors.white,
                           ),
                         ),
                       ),
-                      if (video.isPremium)
+                      if (example.video?.isPremium ?? true)
                         Positioned(
                           top: 12,
                           right: 12,
@@ -539,7 +534,7 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('محتوى مدفوع'),
-        content: const Text('هذا المثال ضمن المحتوى المدفوع قم بالترقية لمشاهدته'),
+        content: const Text('هذا التمرين ضمن المحتوى المدفوع قم بالترقية لمشاهدته'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('إلغاء')),
           FilledButton(

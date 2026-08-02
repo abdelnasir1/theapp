@@ -6,11 +6,14 @@ import '../screens/home_screen.dart';
 import '../screens/level_one_screen.dart';
 import '../screens/level_two_screen.dart';
 import '../screens/level_three_screen.dart';
+import '../screens/level_four_screen.dart';
 import '../screens/video_player_screen.dart';
 import '../screens/payment_screen.dart';
 import '../screens/receipt_verification_screen.dart';
 import '../screens/feedback_screen.dart';
 import '../screens/privacy_policy_screen.dart';
+import '../screens/example_page.dart';
+import '../models/content_model.dart';
 
 class AppRoutes {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -31,7 +34,15 @@ class AppRoutes {
       case '/level-three':
         final args = settings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
-          builder: (_) => LevelThreeScreen(categoryId: args['categoryId']),
+          builder: (_) => LevelThreeScreen(
+            categoryId: args['categoryId'],
+            categoryName: args['categoryName'],
+          ),
+        );
+      case '/level-four':
+        final args = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => LevelFourScreen(categoryId: args['categoryId']),
         );
       case '/video-player':
         final args = settings.arguments as Map<String, dynamic>;
@@ -54,8 +65,17 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const FeedbackScreen());
       case '/privacy-policy':
         return MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen());
+
+      case '/example-page':
+        final args = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => ExamplePage(
+            examples: args['examples'] as List<Example>,
+            initialIndex: args['index'] as int,
+          ),
+        );
       default:
-        return MaterialPageRoute(builder: (_) => const LoginScreen());
+        return MaterialPageRoute(builder: (_) => const HomeScreen());
     }
   }
 }

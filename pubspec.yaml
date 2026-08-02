@@ -22,7 +22,6 @@ dependencies:
   media_kit: ^1.2.6
   media_kit_video: ^2.0.1
   media_kit_libs_video: ^1.0.7
-  video_player: ^2.13.0
 
 dev_dependencies:
   flutter_test:
@@ -35,6 +34,7 @@ flutter:
 
   assets:
     - assets/images/download_image.jpg
+    - assets/images/Slide1_cluster_4.png
 
   fonts:
     - family: Tajawal

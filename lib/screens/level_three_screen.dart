@@ -2,225 +2,108 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/content_provider.dart';
-import '../../providers/subscription_provider.dart';
-import '../../providers/auth_provider.dart';
-import '../../providers/favorites_provider.dart';
 
 class LevelThreeScreen extends StatefulWidget {
   final String categoryId;
+  final String categoryName;
 
-  const LevelThreeScreen({super.key, required this.categoryId});
+  const LevelThreeScreen({
+    super.key,
+    required this.categoryId,
+    required this.categoryName,
+  });
 
   @override
   State<LevelThreeScreen> createState() => _LevelThreeScreenState();
 }
 
 class _LevelThreeScreenState extends State<LevelThreeScreen> {
+  String _searchQuery = '';
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ContentProvider>().fetchVideos(widget.categoryId);
+      context.read<ContentProvider>().fetchLevelThreeCategories(widget.categoryId);
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('أمثلة الباب'),
+        title: Text(widget.categoryName),
       ),
-      body: Consumer3<ContentProvider, SubscriptionProvider, FavoritesProvider>(
-        builder: (context, contentProvider, subscriptionProvider, favoritesProvider, _) {
-          if (contentProvider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          return ListView.builder(
+      body: Column(
+        children: [
+          // Search Bar
+          Padding(
             padding: const EdgeInsets.all(16),
-            itemCount: contentProvider.videos.length,
-            itemBuilder: (context, index) {
-              final video = contentProvider.videos[index];
-              final canAccess = subscriptionProvider.canAccessContent(
-                video.isPremium,
-              );
-              final isFav = favoritesProvider.isFavorite(video.id);
-
-              return Card(
-                clipBehavior: Clip.antiAlias,
-                margin: const EdgeInsets.only(bottom: 16),
-                elevation: 3,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15)),
-                child: InkWell(
-                  onTap: () {
-                    if (!canAccess) {
-                      _showSubscriptionDialog(context);
-                    } else {
-                      Navigator.pushNamed(
-                        context,
-                        '/video-player',
-                        arguments: {
-                          'videoId': video.id,
-                          'videoUrl': video.videoUrl,
-                        },
-                      );
-                    }
-                  },
-                  child: AspectRatio(
-                    aspectRatio: 16 / 9,
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        // Thumbnail
-                        if (video.thumbnailUrl != null &&
-                            video.thumbnailUrl!.isNotEmpty)
-                          Image.network(
-                            video.thumbnailUrl!,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                Container(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .surfaceContainerHighest,
-                              child: const Icon(Icons.broken_image_outlined,
-                                  size: 50, color: Colors.grey),
-                            ),
-                          )
-                        else
-                          Container(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .surfaceContainerHighest,
-                            child: const Icon(Icons.image_outlined,
-                                size: 50, color: Colors.grey),
-                          ),
-                        // Play/Lock Overlay
-                        Center(
-                          child: Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withValues(alpha: 0.4),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              canAccess
-                                  ? Icons.play_arrow_rounded
-                                  : Icons.lock_rounded,
-                              size: 40,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                        // Favorite Toggle
-                        Positioned(
-                          top: 12,
-                          left: 12,
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onTap: () {
-                                favoritesProvider.toggleFavorite(video);
-                              },
-                              borderRadius: BorderRadius.circular(20),
-                              child: Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: Colors.black.withValues(alpha: 0.3),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  isFav
-                                      ? Icons.favorite_rounded
-                                      : Icons.favorite_border_rounded,
-                                  color: isFav ? Colors.red : Colors.white,
-                                  size: 20,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        // Premium Badge
-                        if (video.isPremium)
-                          Positioned(
-                            top: 12,
-                            right: 12,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: Colors.amber.shade700,
-                                borderRadius: BorderRadius.circular(8),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withValues(alpha: 0.2),
-                                    blurRadius: 4,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: const Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                   Icon(Icons.workspace_premium_rounded,
-                                      color: Colors.white, size: 14),
-                                   SizedBox(width: 4),
-                                  Text(
-                                    'مدفوع',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'أبحث عن درس..',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
-              );
-            },
-          );
-        },
-      ),
-    );
-  }
-
-  void _showSubscriptionDialog(BuildContext context) {
-    final authProvider = context.read<AuthProvider>();
-    final bool isAuthenticated = authProvider.user != null;
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(
-          isAuthenticated ? 'محتوى مدفوع' : 'تسجيل الدخول مطلوب',
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        content: Text(
-          isAuthenticated
-              ? 'هذا المثال ضمن المحتوى المدفوع قم بالترقية لمشاهدته'
-              : 'لمشاهدة الدروس المدفوعة يجب عليك تسجيل الدخول أولاً.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('إلغاء'),
+              ),
+              onChanged: (value) => setState(() => _searchQuery = value),
+            ),
           ),
-          FilledButton(
-            onPressed: () {
-              Navigator.pop(context);
-              if (isAuthenticated) {
-                Navigator.pushNamed(context, '/payment');
-              } else {
-                Navigator.pushNamed(context, '/login');
-              }
-            },
-            child: Text(isAuthenticated ? 'ترقية' : 'تسجيل الدخول'),
+          Expanded(
+            child: Consumer<ContentProvider>(
+              builder: (context, provider, _) {
+                if (provider.isLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                final categories = provider.levelThreeCategories.where((c) =>
+                  c.name.toLowerCase().contains(_searchQuery.toLowerCase())).toList();
+
+                if (categories.isEmpty) {
+                  return const Center(child: Text('لا يوجد درس بهذا الإسم'));
+                }
+
+                return ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: categories.length,
+                  itemBuilder: (context, index) {
+                    final category = categories[index];
+                    return Card(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                        leading: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: colorScheme.primaryContainer.withValues(alpha: 0.3),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(Icons.folder_open_rounded, color: colorScheme.primary),
+                        ),
+                        title: Text(
+                          category.name,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        trailing: const Icon(Icons.chevron_right_rounded),
+                        onTap: () {
+                          debugPrint(category.id);
+                          Navigator.pushNamed(
+                            context,
+                            '/level-four',
+                            arguments: {'categoryId': category.id},
+                          );
+                        },
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
           ),
         ],
       ),

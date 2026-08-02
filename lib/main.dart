@@ -41,25 +41,25 @@ class MyApp extends StatelessWidget {
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
           return MaterialApp(
-            locale: const Locale('ar'),
-            supportedLocales: const [
-              Locale('ar'),
-              Locale('en'),
-            ],
-            localizationsDelegates: const [
-              GlobalMaterialLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-            ],
-            debugShowCheckedModeBanner: false,
-            title: 'maaz solutions',
-            theme: AppTheme.lightTheme,
-            darkTheme: AppTheme.darkTheme,
-            themeMode: themeProvider.themeMode,
-            onGenerateRoute: AppRoutes.generateRoute,
-            initialRoute: '/home',
-          );
-        },
+              locale: const Locale('ar'),
+              supportedLocales: const [
+                Locale('ar'),
+                Locale('en'),
+              ],
+              localizationsDelegates: const [
+                GlobalMaterialLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+              ],
+              debugShowCheckedModeBanner: false,
+              title: 'maaz solutions',
+              theme: AppTheme.lightTheme,
+              darkTheme: AppTheme.darkTheme,
+              themeMode: themeProvider.themeMode,
+              onGenerateRoute: AppRoutes.generateRoute,
+              initialRoute: '/home',
+            );
+          },
       ),
     );
   }

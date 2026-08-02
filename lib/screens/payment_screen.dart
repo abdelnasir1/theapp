@@ -276,6 +276,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       ),
               ),
             ),
+            const SizedBox(height: 40),
           ],
         )
        : isSup()

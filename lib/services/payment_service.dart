@@ -21,6 +21,7 @@ class PaymentService {
       throw Exception('Failed to upload receipt: ${e.toString()}');
     }
   }
+
   Future<Map<String, dynamic>> processPayment({
     required String userId,
     required String receiptUrl,
@@ -40,16 +41,16 @@ class PaymentService {
       // Call edge function for OCR processing
      // final ocrResponse = await _supabase.functions.invoke(
       //  'process-receipt-ocr',
-       // body: {
-        //  'receipt_url': receiptUrl,
-        //  'user_id': userId,
-       // },
+      //  body: {
+       //   'receipt_url': receiptUrl,
+       //   'user_id': userId,
+     //   },
     //  );
 
       return {
         'success': true,
         'payment_id': paymentResponse[0]['id'],
-       // 'ocr_data': ocrResponse.data,
+      //  'ocr_data': ocrResponse.data,
       };
     } catch (e) {
       throw Exception('Payment processing failed: ${e.toString()}');
