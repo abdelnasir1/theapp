@@ -1,5 +1,4 @@
 // services/supabase_service.dart
-import 'package:flutter/cupertino.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/content_model.dart';
 import '../models/subscription_model.dart';

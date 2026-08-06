@@ -31,8 +31,8 @@ class _ReceiptVerificationScreenState extends State<ReceiptVerificationScreen> {
     setState(() => _isProcessing = true);
 
     try {
-      final provider = context.read<SubscriptionProvider>();
-      final userId = context.read<AuthProvider>().user!.id;
+//      final provider = context.read<SubscriptionProvider>();
+//      final userId = context.read<AuthProvider>().user!.id;
 //      await provider.processReceipt(widget.receiptUrl, userId);
 
       setState(() {

@@ -71,7 +71,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+   // final colorScheme = theme.colorScheme;
 
     return Scaffold(
       appBar: AppBar(
