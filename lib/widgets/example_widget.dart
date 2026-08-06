@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
 import '../models/content_model.dart';
 
 class ExampleWidget extends StatefulWidget {
@@ -23,12 +24,29 @@ class ExampleWidget extends StatefulWidget {
 
 class _ExampleWidgetState extends State<ExampleWidget> {
   int? _selectedIndex;
+  final AudioPlayer _audioPlayer = AudioPlayer();
 
   @override
   void didUpdateWidget(ExampleWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.data.id != widget.data.id) {
       _selectedIndex = null;
+    }
+  }
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose();
+    super.dispose();
+  }
+
+  Future<void> _playSound(bool isCorrect) async {
+    try {
+      final String assetPath = isCorrect ? 'sounds/clapping.mp3' : 'sounds/fail.mp3';
+      await _audioPlayer.stop(); // Stop any currently playing sound
+      await _audioPlayer.play(AssetSource(assetPath));
+    } catch (e) {
+      debugPrint('Error playing sound: $e');
     }
   }
 
@@ -155,7 +173,10 @@ class _ExampleWidgetState extends State<ExampleWidget> {
                         return InkWell(
                           onTap: hasResponded
                               ? null
-                              : () => setState(() => _selectedIndex = index),
+                              : () {
+                                  setState(() => _selectedIndex = index);
+                                  _playSound(solution.isCorrect);
+                                },
                           borderRadius: BorderRadius.circular(16),
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 200),

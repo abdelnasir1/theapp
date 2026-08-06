@@ -4,12 +4,14 @@ class SubscriptionModel {
   final String userId;
   final DateTime startDate;
   final bool isActive;
+  final String planName; // Added planName
 
   SubscriptionModel({
     required this.id,
     required this.userId,
     required this.startDate,
     this.isActive = true,
+    required this.planName,
   });
 
   factory SubscriptionModel.fromJson(Map<String, dynamic> json) {
@@ -18,6 +20,7 @@ class SubscriptionModel {
       userId: json['user_id'] ?? '',
       startDate: DateTime.parse(json['start_date']),
       isActive: json['is_active'] ?? true,
+      planName: json['plan_name'] ?? 'Free', // Default or from DB
     );
   }
 
@@ -27,6 +30,7 @@ class SubscriptionModel {
       'user_id': userId,
       'start_date': startDate.toIso8601String(),
       'is_active': isActive,
+      'plan_name': planName,
     };
   }
 

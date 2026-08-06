@@ -15,6 +15,8 @@ import '../screens/privacy_policy_screen.dart';
 import '../screens/example_page.dart';
 import '../models/content_model.dart';
 
+import '../screens/receipt_upload_screen.dart';
+
 class AppRoutes {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -42,7 +44,10 @@ class AppRoutes {
       case '/level-four':
         final args = settings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
-          builder: (_) => LevelFourScreen(categoryId: args['categoryId']),
+          builder: (_) => LevelFourScreen(
+            categoryId: args['categoryId'],
+            categoryName: args['categoryName'],
+          ),
         );
       case '/video-player':
         final args = settings.arguments as Map<String, dynamic>;
@@ -54,6 +59,14 @@ class AppRoutes {
         );
       case '/payment':
         return MaterialPageRoute(builder: (_) => const PaymentScreen());
+      case '/receipt-upload':
+        final args = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => ReceiptUploadScreen(
+            planName: args['planName'],
+            price: args['price'],
+          ),
+        );
       case '/receipt-verification':
         final args = settings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(

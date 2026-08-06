@@ -242,7 +242,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ],
                           ),
                         )
-                      else if (authProvider.user!.isSubscribed)
+                      else if (subscriptionProvider.hasActiveSubscription)
                         Container(
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(
@@ -256,18 +256,18 @@ class _HomeScreenState extends State<HomeScreen> {
                               color: Colors.green.withValues(alpha: 0.25),
                             ),
                           ),
-                          child: const Row(
+                          child: Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.check_circle_rounded,
                                 color: Colors.green,
                                 size: 22,
                               ),
-                              SizedBox(width: 10),
+                              const SizedBox(width: 10),
                               Expanded(
                                 child: Text(
-                                  'حساب مدفوع',
-                                  style: TextStyle(
+                                  'الخطط النشطة: ${subscriptionProvider.activePlansSummary}',
+                                  style: const TextStyle(
                                     color: Colors.green,
                                     fontWeight: FontWeight.w600,
                                     fontSize: 15,
@@ -478,7 +478,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
-                      Image.network(example.questionImageUrl, fit: BoxFit.cover),
+                      Image.network(example.thumbnail, fit: BoxFit.cover),
                       // Remove Favorite
                       Positioned(
                         top: 12,
@@ -644,14 +644,19 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 24),
 
               // Account Status Card
-              _buildProfileTile(
-                icon: Icons.card_membership_rounded,
-                title: 'حالة الحساب',
-                subtitle: user.isSubscribed ? 'مدفوع' : 'مجاني',
-                subtitleColor:
-                user.isSubscribed ? Colors.green : Colors.orange,
-                onTap: () {
-                  Navigator.pushNamed(context, '/payment');
+              Consumer<SubscriptionProvider>(
+                builder: (context, subProvider, _) {
+                  return _buildProfileTile(
+                    icon: Icons.card_membership_rounded,
+                    title: 'حالة الحساب',
+                    subtitle: subProvider.hasActiveSubscription
+                        ? subProvider.activePlansSummary
+                        : 'مجاني',
+                    subtitleColor: subProvider.hasActiveSubscription ? Colors.green : Colors.orange,
+                    onTap: () {
+                      Navigator.pushNamed(context, '/payment');
+                    },
+                  );
                 },
               ),
               _buildProfileTile(

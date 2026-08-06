@@ -22,89 +22,78 @@ class SupabaseService {
     return data.map((json) => Category.fromJson(json)).toList();
   }
 
-  /// Fetches examples for a specific category, including associated video info.
-  /// Solutions are now stored in a JSON column 'options' within the 'examples' table.
   Future<List<Example>> getExamples(String categoryId) async {
     final data = await _supabase
         .from('examples')
         .select('*, videos!video_id(*)')
         .eq('parent_category', categoryId);
 
-    debugPrint(data.toString());
-
     return (data as List).map((json) => Example.fromJson(json)).toList();
   }
 
-  Future<SubscriptionModel?> getActiveSubscription(String userId) async {
+  Future<List<SubscriptionModel>> getUserSubscriptions(String userId) async {
     try {
       final data = await _supabase
           .from('subscriptions')
           .select()
           .eq('user_id', userId)
-          .eq('is_active', true)
-          .limit(1)
-          .maybeSingle();
+          .eq('is_active', true);
 
-      if (data == null) return null;
-      return SubscriptionModel.fromJson(data);
+      return (data as List).map((json) => SubscriptionModel.fromJson(json)).toList();
     } catch (e) {
-      return null;
+      return [];
     }
   }
 
+  /// Submits the receipt to the server. 
+  /// The server (Edge Function/Database) is responsible for OCR, 
+  /// validation, updating payment status, and activating the subscription.
   Future<Map<String, dynamic>> processAndValidateReceipt(
     String receiptUrl,
     String userId,
+    String planName,
   ) async {
-    await _supabase.from('payments').insert({
-      'user_id': userId,
-      'receipt_url': receiptUrl,
-      'status': 'processing',
-    });
-
     try {
-      // Step 2: Validate transaction (Mocked)
-      const isValid = true;
+      // 1. Create the payment record with 'processing' status
+      await _supabase.from('payments').insert({
+        'user_id': userId,
+        'receipt_url': receiptUrl,
+        'status': 'processing',
+        'plan_type': planName
+      });
 
-      // Step 3: Update payment status
-      await _supabase
-          .from('payments')
-          .update({
-            'status': 'valid',
-            'verified_at': DateTime.now().toIso8601String(),
-          })
-          .eq('user_id', userId)
-          .eq('receipt_url', receiptUrl);
-
-      // Step 4: Activate subscription
-      await activateSubscription(userId);
+      // 2. Notify the server to start verification
+      // We invoke the function and let it handle all database updates (payments and subscriptions)
+    //  await _supabase.functions.invoke(
+     //   'process-receipt-ocr',
+      //  body: {
+       //   'receipt_url': receiptUrl,
+        //  'user_id': userId,
+         // 'plan_name': planName,
+       // },
+    //  );
 
       return {
         'success': true,
-        'is_valid': isValid,
-        'message': isValid
-            ? 'Transaction validated successfully'
-            : 'Invalid transaction',
+        'message': 'تم إرسال الإيصال بنجاح. سنقوم بالتحقق منه وتفعيل اشتراكك قريباً.',
       };
     } catch (e) {
       return {
         'success': false,
-        'message': 'Processing failed: ${e.toString()}',
+        'message': 'فشل إرسال الإيصال: ${e.toString()}',
       };
     }
   }
 
-  Future<void> activateSubscription(String userId) async {
-    final startDate = DateTime.now();
-
-    await _supabase.from('subscriptions').insert({
+  Future<void> submitFeedback({
+    required String? userId,
+    required String message,
+    Map<String, dynamic>? metadata,
+  }) async {
+    await _supabase.from('feedback').insert({
       'user_id': userId,
-      'start_date': startDate.toIso8601String(),
-      'is_active': true
+      'message': message,
+      'metadata': metadata ?? {},
     });
-
-    await _supabase
-        .from('profiles')
-        .update({'is_subscribed': true}).eq('id', userId);
   }
 }

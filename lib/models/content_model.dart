@@ -60,11 +60,13 @@ class Video {
   final String id;
   final String videoUrl;
   final bool isPremium;
+  final String? planType;
 
   Video({
     required this.id,
     required this.videoUrl,
     this.isPremium = true,
+    this.planType,
   });
 
   factory Video.fromJson(Map<String, dynamic> json) {
@@ -72,6 +74,7 @@ class Video {
       id: json['id'] ?? '',
       videoUrl: json['video_url'] ?? '',
       isPremium: json['is_premium'] ?? true,
+      planType: json['plan_type'],
     );
   }
 
@@ -80,6 +83,7 @@ class Video {
       'id': id,
       'video_url': videoUrl,
       'is_premium': isPremium,
+      'plan_type': planType,
     };
   }
 }
@@ -89,6 +93,7 @@ class Example {
   final String name;
   final String? parentCategory;
   final String questionImageUrl;
+  final String thumbnail;
   final String? videoId;
   final List<Solution> solutions;
   final Video? video;
@@ -98,6 +103,7 @@ class Example {
     required this.name,
     this.parentCategory,
     required this.questionImageUrl,
+    required this.thumbnail,
     this.videoId,
     this.solutions = const [],
     this.video,
@@ -112,7 +118,6 @@ class Example {
             .map((s) => Solution.fromJson(s as Map<String, dynamic>))
             .toList();
       } else if (json['options'] is Map) {
-        // Alternative format: {"أ": true, "ب": false}
         final Map<String, dynamic> optionsMap = json['options'];
         solutionsList = optionsMap.entries
             .map((e) => Solution(label: e.key, isCorrect: e.value == true))
@@ -125,6 +130,7 @@ class Example {
       name: json['name'] ?? '',
       parentCategory: json['parent_category'],
       questionImageUrl: json['question_image_url'] ?? '',
+      thumbnail: json['thumbnail'] ?? '',
       videoId: json['video_id'],
       solutions: solutionsList,
       video: json['videos'] != null ? Video.fromJson(json['videos']) : null,
@@ -137,6 +143,7 @@ class Example {
       'name': name,
       'parent_category': parentCategory,
       'question_image_url': questionImageUrl,
+      'thumbnail': thumbnail,
       'video_id': videoId,
       'options': solutions.map((s) => s.toJson()).toList(),
       'videos': video?.toJson(),

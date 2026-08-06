@@ -5,21 +5,36 @@ import '../services/supabase_service.dart';
 
 class SubscriptionProvider with ChangeNotifier {
   final SupabaseService _supabaseService = SupabaseService();
-  SubscriptionModel? _subscription;
+  List<SubscriptionModel> _subscriptions = [];
   bool _isLoading = false;
-  bool _hasActiveSubscription = false;
 
-  SubscriptionModel? get subscription => _subscription;
+  List<SubscriptionModel> get subscriptions => _subscriptions;
   bool get isLoading => _isLoading;
-  bool get hasActiveSubscription => _hasActiveSubscription;
+  bool get hasActiveSubscription => _subscriptions.any((s) => s.isActive);
+
+  bool isPlanActive(String planName) {
+    return _subscriptions.any((s) => s.planName == planName && s.isActive);
+  }
+
+  List<String> get activePlanNames {
+    return _subscriptions
+        .where((s) => s.isActive)
+        .map((s) => s.planName)
+        .toList();
+  }
+
+  String get activePlansSummary {
+    final names = activePlanNames;
+    if (names.isEmpty) return 'حساب مجاني';
+    return names.join(' و ');
+  }
 
   Future<void> checkSubscription(String userId) async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      _subscription = await _supabaseService.getActiveSubscription(userId);
-      _hasActiveSubscription = _subscription != null ;
+      _subscriptions = await _supabaseService.getUserSubscriptions(userId);
       _isLoading = false;
       notifyListeners();
     } catch (e) {
@@ -29,19 +44,23 @@ class SubscriptionProvider with ChangeNotifier {
     }
   }
 
-  bool canAccessContent(bool isPremiumContent) {
+  bool canAccessContent(bool isPremiumContent, {String? planType}) {
     if (!isPremiumContent) return true;
-    return _hasActiveSubscription;
+    if (planType == null) return hasActiveSubscription;
+    return isPlanActive(planType);
   }
 
-  Future<void> processReceipt(String receiptUrl, String userId) async {
+  Future<Map<String, dynamic>> processReceipt(String receiptUrl, String userId, String planName) async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      // Process OCR and validate receipt
-      await _supabaseService.processAndValidateReceipt(receiptUrl, userId);
-      await checkSubscription(userId);
+      final result = await _supabaseService.processAndValidateReceipt(receiptUrl, userId, planName);
+      // We don't call checkSubscription immediately here because verification 
+      // might happen asynchronously on the server.
+      _isLoading = false;
+      notifyListeners();
+      return result;
     } catch (e) {
       _isLoading = false;
       notifyListeners();

@@ -6,6 +6,21 @@ import '../providers/auth_provider.dart';
 import '../providers/subscription_provider.dart';
 import '../widgets/custom_painter.dart';
 
+enum AppPlan {
+  basicbook('أساسية'),
+  firstbookAdvance('متخصصة كتاب أول'),
+  secondbookAdvance('متخصصة كتاب ثاني');
+
+  final String displayName;
+  const AppPlan(this.displayName);
+
+  static String getDisplayName(String? code) {
+    if (code == 'basicbook') return basicbook.displayName;
+    if (code == 'firstbook_advance') return firstbookAdvance.displayName;
+    if (code == 'secondbook_advance') return secondbookAdvance.displayName;
+    return code ?? 'غير معروفة';
+  }
+}
 class ExamplePage extends StatefulWidget {
   final List<Example> examples;
   final int initialIndex;
@@ -29,9 +44,10 @@ class _ExamplePageState extends State<ExamplePage> {
     _currentIndex = widget.initialIndex;
   }
 
-  void _showSubscriptionDialog(BuildContext context) {
+  void _showSubscriptionDialog(BuildContext context, {String? planCode}) {
     final authProvider = context.read<AuthProvider>();
     final bool isAuthenticated = authProvider.user != null;
+    final String planName = AppPlan.getDisplayName(planCode);
 
     showDialog(
       context: context,
@@ -43,8 +59,10 @@ class _ExamplePageState extends State<ExamplePage> {
         ),
         content: Text(
           isAuthenticated
-              ? 'فيديو الشرح ضمن المحتوى المدفوع، قم بالترقية لمشاهدته'
-              : 'لمشاهدة فيديوهات الشرح يجب عليك تسجيل الدخول أولاً.',
+              ? (planCode != null
+                  ? 'فيديو الشرح متاح لمشتركي خطة ($planName) فقط. يرجى الاشتراك للوصول إليه.'
+                  : 'فيديو الشرح ضمن المحتوى المدفوع، قم بالترقية لمشاهدته')
+              : 'لمشاهدة فيديوهات الشرح يجب عليك تسجيل الدخول والاشتراك أولاً.',
         ),
         actions: [
           TextButton(
@@ -96,6 +114,7 @@ class _ExamplePageState extends State<ExamplePage> {
           if (currentExample.video != null) {
             final canAccess = subscriptionProvider.canAccessContent(
               currentExample.video!.isPremium,
+              planType: currentExample.video!.planType,
             );
 
             if (canAccess) {
@@ -108,7 +127,7 @@ class _ExamplePageState extends State<ExamplePage> {
                 },
               );
             } else {
-              _showSubscriptionDialog(context);
+              _showSubscriptionDialog(context, planCode: currentExample.video!.planType);
             }
           }
         },

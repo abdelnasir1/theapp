@@ -22,6 +22,7 @@ dependencies:
   media_kit: ^1.2.6
   media_kit_video: ^2.0.1
   media_kit_libs_video: ^1.0.7
+  audioplayers: ^6.1.0
 
 dev_dependencies:
   flutter_test:
@@ -33,8 +34,16 @@ flutter:
   uses-material-design: true
 
   assets:
+
     - assets/images/download_image.jpg
     - assets/images/Slide1_cluster_4.png
+    - assets/images/Slide1_cluster_2.png
+    ##sounds
+    - assets/sounds/clapping.mp3
+    - assets/sounds/fail.mp3
+    ##headers and footers
+    - assets/headers/التباديل.jpg
+    - assets/footers/التباديل.jpg
 
   fonts:
     - family: Tajawal

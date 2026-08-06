@@ -95,7 +95,10 @@ class _LevelThreeScreenState extends State<LevelThreeScreen> {
                           Navigator.pushNamed(
                             context,
                             '/level-four',
-                            arguments: {'categoryId': category.id},
+                            arguments: {
+                              'categoryId': category.id,
+                              'categoryName': category.name,
+                            },
                           );
                         },
                       ),
