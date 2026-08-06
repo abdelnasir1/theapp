@@ -1,8 +1,8 @@
 // screens/payment/receipt_verification_screen.dart
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../providers/auth_provider.dart';
-import '../../providers/subscription_provider.dart';
+//import 'package:provider/provider.dart';
+//import '../../providers/auth_provider.dart';
+//import '../../providers/subscription_provider.dart';
 
 class ReceiptVerificationScreen extends StatefulWidget {
   final String receiptUrl;
