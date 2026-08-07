@@ -8,8 +8,24 @@ import '../../providers/auth_provider.dart';
 import '../../providers/subscription_provider.dart';
 import '../../services/payment_service.dart';
 
+enum BookPlan {
+  basicbook('أساسية'),
+  firstbookAdvance('متخصصة كتاب أول'),
+  secondbookAdvance('متخصصة كتاب ثاني');
+
+  final String arabicName;
+  const BookPlan(this.arabicName);
+
+  static String getArabicName(String code) {
+    if (code == 'basicbook') return BookPlan.basicbook.arabicName;
+    if (code == 'firstbook_advance') return BookPlan.firstbookAdvance.arabicName;
+    if (code == 'secondbook_advance') return BookPlan.secondbookAdvance.arabicName;
+    return code;
+  }
+}
+
 class ReceiptUploadScreen extends StatefulWidget {
-  final String planName;
+  final String planName; // This is the English code (plan_type)
   final String price;
 
   const ReceiptUploadScreen({
@@ -30,8 +46,10 @@ class _ReceiptUploadScreenState extends State<ReceiptUploadScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final arabicTitle = BookPlan.getArabicName(widget.planName);
+    
     return Scaffold(
-      appBar: AppBar(title: Text('دفع اشتراك ${widget.planName}')),
+      appBar: AppBar(title: Text('دفع اشتراك $arabicTitle')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -169,6 +187,7 @@ class _ReceiptUploadScreenState extends State<ReceiptUploadScreen> {
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16),
           backgroundColor: Theme.of(context).primaryColor,
+          foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
         child: _isProcessing
@@ -200,6 +219,7 @@ class _ReceiptUploadScreenState extends State<ReceiptUploadScreen> {
       if (userId == null) throw Exception('User not authenticated');
 
       final receiptUrl = await _paymentService.uploadReceipt(userId, _receiptImage!);
+      // Sending the English planName (code) to the backend
       final result = await subProvider.processReceipt(receiptUrl, userId, widget.planName);
       
       if (mounted) {

@@ -352,7 +352,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Container(
                 alignment:Alignment.center,
                 child: Text(
-                  'الأعلى مشاهدة',
+                  'الأعلى مشاهدة في علمي',
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w700,
                   ),
@@ -365,13 +365,91 @@ class _HomeScreenState extends State<HomeScreen> {
                   scrollDirection: Axis.horizontal,
                   physics: const BouncingScrollPhysics(),
                   children: [
-                    _buildTopicChip('Algebra', Icons.functions_rounded, Colors.blue),
                     _buildTopicChip(
-                        'Geometry', Icons.category_rounded, Colors.green),
+                      'مبدأ العد',
+                      Icons.functions_rounded,
+                      Colors.blue,
+                      onTap: () => Navigator.pushNamed(
+                        context,
+                        '/level-four',
+                        arguments: {
+                          'categoryId': 'PLACEHOLDER_ID_1',
+                          'categoryName': 'مبدأ العد',
+                        },
+                      ),
+                    ),
                     _buildTopicChip(
-                        'Calculus', Icons.trending_up_rounded, Colors.orange),
+                      'التباديل',
+                      Icons.category_rounded,
+                      Colors.green,
+                      onTap: () => Navigator.pushNamed(
+                        context,
+                        '/level-four',
+                        arguments: {
+                          'categoryId': 'PLACEHOLDER_ID_2',
+                          'categoryName': 'التباديل',
+                        },
+                      ),
+                    ),
                     _buildTopicChip(
-                        'Statistics', Icons.bar_chart_rounded, Colors.purple),
+                      'التوافيق',
+                      Icons.trending_up_rounded,
+                      Colors.orange,
+                      onTap: () => Navigator.pushNamed(
+                        context,
+                        '/level-four',
+                        arguments: {
+                          'categoryId': 'PLACEHOLDER_ID_3',
+                          'categoryName': 'التوافيق',
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 32),
+              Container(
+                alignment:Alignment.center,
+                child: Text(
+                  'الأعلى مشاهدة في أدبي',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 14),
+              SizedBox(
+                height: 130,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
+                  children: [
+                    _buildTopicChip(
+                      'إحصاء',
+                      Icons.bar_chart_rounded,
+                      Colors.purple,
+                      onTap: () => Navigator.pushNamed(
+                        context,
+                        '/level-four',
+                        arguments: {
+                          'categoryId': 'PLACEHOLDER_ID_4',
+                          'categoryName': 'إحصاء',
+                        },
+                      ),
+                    ),
+                    _buildTopicChip(
+                      'احتمالات',
+                      Icons.pie_chart_rounded,
+                      Colors.teal,
+                      onTap: () => Navigator.pushNamed(
+                        context,
+                        '/level-four',
+                        arguments: {
+                          'categoryId': 'PLACEHOLDER_ID_5',
+                          'categoryName': 'احتمالات',
+                        },
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -838,13 +916,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // ─── Helper Widgets ───────────────────────────────────────────────────────
 
-  Widget _buildTopicChip(String title, IconData icon, Color color) {
+  Widget _buildTopicChip(String title, IconData icon, Color color, {VoidCallback? onTap}) {
     return Padding(
       padding: const EdgeInsets.only(right: 14),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () {
+          onTap: onTap ?? () {
             Navigator.pushNamed(context, '/level-one');
           },
           borderRadius: BorderRadius.circular(18),
