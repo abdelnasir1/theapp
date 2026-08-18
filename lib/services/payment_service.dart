@@ -6,7 +6,7 @@ class PaymentService {
 
   Future<String> uploadReceipt(String userId, dynamic file) async {
     try {
-      final fileName = 'receipts/$userId/${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final fileName = '/$userId/${DateTime.now().millisecondsSinceEpoch}.jpg';
 
       final response = await _supabase.storage
           .from('receipts')

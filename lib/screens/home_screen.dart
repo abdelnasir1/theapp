@@ -5,6 +5,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/subscription_provider.dart';
 import '../../providers/theme_provider.dart';
 import '../../providers/favorites_provider.dart';
+import '../widgets/custom_painter.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -461,7 +462,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildFavoritesTab() {
-    return Consumer2<FavoritesProvider, SubscriptionProvider>(
+    return  CustomPaint(
+        painter: PaperBackgroundPainter(),
+        size: Size.infinite,
+        child:Consumer2<FavoritesProvider, SubscriptionProvider>(
       builder: (context, favoritesProvider, subscriptionProvider, _) {
         final favorites = favoritesProvider.favoriteExamples;
         final theme = Theme.of(context);
@@ -604,7 +608,7 @@ class _HomeScreenState extends State<HomeScreen> {
           },
         );
       },
-    );
+    ));
   }
 
   void _showSubscriptionDialog(BuildContext context) {

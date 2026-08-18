@@ -26,7 +26,7 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const SignupScreen());
       case '/home':
         return MaterialPageRoute(builder: (_) => const HomeScreen());
-      case '/level-one':
+     case '/level-one':
         return MaterialPageRoute(builder: (_) => const LevelOneScreen());
       case '/level-two':
         final args = settings.arguments as Map<String, dynamic>;
