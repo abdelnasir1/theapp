@@ -267,7 +267,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Text(
-                                  'الخطط النشطة: ${subscriptionProvider.activePlansSummary}',
+                                  'الأشتراكات النشطة: ${subscriptionProvider.activePlansSummary}',
                                   style: const TextStyle(
                                     color: Colors.green,
                                     fontWeight: FontWeight.w600,

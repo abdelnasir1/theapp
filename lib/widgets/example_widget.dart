@@ -98,7 +98,7 @@ class _ExampleWidgetState extends State<ExampleWidget> {
                             ),
                           );
                         },
-                        errorBuilder: (_, __, ___) => Container(
+                        errorBuilder: (_, _, _) => Container(
                           padding: const EdgeInsets.all(32),
                           decoration: BoxDecoration(
                             color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.2),

@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import '../models/subscription_model.dart';
 import '../services/supabase_service.dart';
+import '../config/constants.dart';
 
 class SubscriptionProvider with ChangeNotifier {
   final SupabaseService _supabaseService = SupabaseService();
@@ -19,7 +20,7 @@ class SubscriptionProvider with ChangeNotifier {
   List<String> get activePlanNames {
     return _subscriptions
         .where((s) => s.isActive)
-        .map((s) => s.planName)
+        .map((s) => AppConstants.getPlanName(s.planName))
         .toList();
   }
 

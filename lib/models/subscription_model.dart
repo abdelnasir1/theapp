@@ -1,21 +1,4 @@
 // models/subscription_model.dart
-
-enum BookPlan {
-  basicbook('أساسية'),
-  firstbookAdvance('متخصصة كتاب أول'),
-  secondbookAdvance('متخصصة كتاب ثاني');
-
-  final String arabicName;
-  const BookPlan(this.arabicName);
-
-  static String getArabicName(String code) {
-    if (code == 'basicbook') return BookPlan.basicbook.arabicName;
-    if (code == 'firstbook_advance') return BookPlan.firstbookAdvance.arabicName;
-    if (code == 'secondbook_advance') return BookPlan.secondbookAdvance.arabicName;
-    return code;
-  }
-}
-
 class SubscriptionModel {
   final String id;
   final String userId;
@@ -37,7 +20,7 @@ class SubscriptionModel {
       userId: json['user_id'] ?? '',
       startDate: DateTime.parse(json['start_date']),
       isActive: json['is_active'] ?? true,
-      planName:  BookPlan.getArabicName(json['plan_type']) , // Default or from DB
+      planName:  json['plan_type'] , // Default or from DB
     );
   }
 
@@ -50,6 +33,4 @@ class SubscriptionModel {
       'plan_name': planName,
     };
   }
-
-  bool get isValid => isActive;
 }

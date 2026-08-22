@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
-import '../providers/video_provider.dart';
+import '../services/video_cache_service.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
   final String videoId;

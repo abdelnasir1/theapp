@@ -59,7 +59,7 @@ class PaymentScreen extends StatelessWidget {
               price: '100,000',
               features: ['مشاهدة فيديوهات المستوى الأساسي', 'حفظ التمارين المفضلة'],
               color: Colors.blue,
-              isActive: subProvider.isPlanActive('أساسية'),
+              isActive: subProvider.isPlanActive('basicbook'),
             ),
             _buildPlanCard(
               context,
@@ -68,7 +68,7 @@ class PaymentScreen extends StatelessWidget {
               price: '200,000',
               features: ['مشاهدة فيديوهات الكتاب الأول', 'دعم فني متخصص'],
               color: Colors.purple,
-              isActive: subProvider.isPlanActive('متخصصة كتاب أول'),
+              isActive: subProvider.isPlanActive('firstbook_advance'),
             ),
             _buildPlanCard(
               context,
@@ -77,7 +77,7 @@ class PaymentScreen extends StatelessWidget {
               price: '200,000',
               //features: ['مشاهدة فيديوهات الكتاب الأول', 'دعم فني متخصص'],
               color: Colors.teal,
-              isActive: subProvider.isPlanActive('متخصصة كتاب ثاني'),
+              isActive: subProvider.isPlanActive('secondbook_advance'),
             ),
 
             const SizedBox(height: 12),

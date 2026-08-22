@@ -1,4 +1,5 @@
 // services/payment_service.dart
+import 'package:flutter/cupertino.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PaymentService {
@@ -12,9 +13,11 @@ class PaymentService {
           .from('receipts')
           .upload(fileName, file);
 
+
       final publicUrl = _supabase.storage
           .from('receipts')
-          .getPublicUrl(response);
+          .getPublicUrl(fileName);
+
 
       return publicUrl;
     } catch (e) {
