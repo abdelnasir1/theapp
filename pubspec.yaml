@@ -17,7 +17,8 @@ dependencies:
   http: ^1.2.0
   shared_preferences: ^2.2.2
   path_provider: ^2.1.6
-  flutter_localization: ^0.4.1
+  flutter_localizations:
+    sdk: flutter
   google_sign_in: ^7.2.0
   media_kit: ^1.2.6
   media_kit_video: ^2.0.1
