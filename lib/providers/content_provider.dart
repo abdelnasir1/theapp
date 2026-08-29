@@ -3,6 +3,23 @@ import 'package:flutter/material.dart';
 import '../models/content_model.dart';
 import '../services/supabase_service.dart';
 
+
+int compareExampleNames(String a, String b) {
+  // Extract year (first 4 digits) and the letter part
+  final yearA = int.tryParse(a.substring(0, 4)) ?? 0;
+  final yearB = int.tryParse(b.substring(0, 4)) ?? 0;
+
+  // First sort by year (descending: 2026 before 2018)
+  if (yearA != yearB) {
+    return yearB.compareTo(yearA);
+  }
+
+  // Same year → sort by the letter part (A before B)
+  final letterA = a.length > 4 ? a.substring(4) : '';
+  final letterB = b.length > 4 ? b.substring(4) : '';
+  return letterA.compareTo(letterB);
+}
+
 class ContentProvider with ChangeNotifier {
   final SupabaseService _supabaseService = SupabaseService();
 
@@ -84,6 +101,7 @@ class ContentProvider with ChangeNotifier {
     notifyListeners();
     try {
       _examples = await _supabaseService.getExamples(categoryId);
+      _examples.sort((a, b) => compareExampleNames(a.name, b.name));
       _isLoading = false;
       notifyListeners();
     } catch (e) {

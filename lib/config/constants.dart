@@ -1,7 +1,7 @@
 class AppConstants {
   static const int localVideosLimit = 30;
   static const int accountnumber = 123_456_789;
-  static const String whatsappNumber = "+249123456789";
+  static const String whatsappNumber = "+249912212622";
 
   // Plan Codes
   static const String planBasic = 'basicbook';

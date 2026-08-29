@@ -5,6 +5,7 @@ import '../models/content_model.dart';
 import '../providers/auth_provider.dart';
 import '../providers/subscription_provider.dart';
 import '../widgets/custom_painter.dart';
+import '../providers/video_provider.dart';
 
 enum AppPlan {
   basicbook('أساسية'),
@@ -90,48 +91,47 @@ class _ExamplePageState extends State<ExamplePage> {
     final currentExample = widget.examples[_currentIndex];
     final subscriptionProvider = context.watch<SubscriptionProvider>();
 
-    return CustomPaint(
-      painter: PaperBackgroundPainter(),
-      size: Size.infinite,
-      child: ExampleWidget(
-        data: currentExample,
-        title: currentExample.name,
-        onPrevious: _currentIndex > 0
-            ? () {
-                setState(() {
-                  _currentIndex--;
-                });
-              }
-            : null,
-        onNext: _currentIndex < widget.examples.length - 1
-            ? () {
-                setState(() {
-                  _currentIndex++;
-                });
-              }
-            : null,
-        onVideo: () {
-          if (currentExample.video != null) {
-            final canAccess = subscriptionProvider.canAccessContent(
-              currentExample.video!.isPremium,
-              planType: currentExample.video!.planType,
-            );
 
-            if (canAccess) {
-              Navigator.pushNamed(
-                context,
-                '/video-player',
-                arguments: {
-                  'videoId': currentExample.id,
-                  'videoUrl': currentExample.video!.videoUrl,
-                },
-              );
-            } else {
-              _showSubscriptionDialog(context, planCode: currentExample.video!.planType);
+    return ExampleWidget(
+      data: currentExample,
+      title: currentExample.name,
+      onPrevious: _currentIndex > 0
+          ? () {
+              setState(() {
+                _currentIndex--;
+              });
             }
+          : null,
+      onNext: _currentIndex < widget.examples.length - 1
+          ? () {
+              setState(() {
+                _currentIndex++;
+              });
+            }
+          : null,
+      onVideo: () async {
+        final video = await VideoCacheManager().featchvideopublic(currentExample.videoId);
+        if (currentExample.videoId != null) {
+          final canAccess = subscriptionProvider.canAccessContent(
+             video!.isPremium,
+            planType: video.planType,
+          );
+
+          if (canAccess) {
+            final videourl = await VideoCacheManager().fetchvideourl(currentExample.videoId);
+            Navigator.pushNamed(
+              context,
+              '/video-player',
+              arguments: {
+                'videoId': currentExample.id,
+                'videoUrl': videourl?.videoUrl,
+              },
+            );
+          } else {
+            _showSubscriptionDialog(context, planCode: video.planType);
           }
-        },
-      ),
+        }
+      },
     );
   }
 }

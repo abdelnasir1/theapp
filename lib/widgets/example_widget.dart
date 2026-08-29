@@ -56,7 +56,7 @@ class _ExampleWidgetState extends State<ExampleWidget> {
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
         title: Text(
           widget.title ?? 'تمرين',
@@ -233,7 +233,6 @@ class _ExampleWidgetState extends State<ExampleWidget> {
                   else
                     const SizedBox(width: 48),
                   const Spacer(),
-                  if (widget.data.video != null)
                     ElevatedButton.icon(
                       onPressed: widget.onVideo,
                       icon: const Icon(Icons.play_circle_rounded),

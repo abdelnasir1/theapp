@@ -1,4 +1,3 @@
-// screens/content/level_three_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/content_provider.dart';
@@ -60,9 +59,13 @@ class _LevelThreeScreenState extends State<LevelThreeScreen> {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                final categories = provider.levelThreeCategories.where((c) =>
-                  c.name.toLowerCase().contains(_searchQuery.toLowerCase())).toList();
-
+                final categories = provider.levelThreeCategories
+                    .where((c) =>
+                    c.name
+                        .toLowerCase()
+                        .contains(_searchQuery.toLowerCase()))
+                    .toList()
+                  ..sort((a, b) => (a.index ?? 0).compareTo(b.index ?? 0));
                 if (categories.isEmpty) {
                   return const Center(child: Text('لا يوجد درس بهذا الإسم'));
                 }
@@ -91,7 +94,6 @@ class _LevelThreeScreenState extends State<LevelThreeScreen> {
                         ),
                         trailing: const Icon(Icons.chevron_right_rounded),
                         onTap: () {
-                          debugPrint(category.id);
                           Navigator.pushNamed(
                             context,
                             '/level-four',

@@ -33,50 +33,13 @@ class PaymentService {
         throw Exception('Failed to create payment record');
       }
 
-      // Call edge function for OCR processing
-      final ocrResponse = await _supabase.functions.invoke(
-        'process-receipt-ocr',
-        body: {
-          'receipt_url': receiptUrl,
-          'user_id': userId,
-        },
-      );
-
       return {
         'success': true,
         'payment_id': paymentResponse[0]['id'],
-        'ocr_data': ocrResponse.data,
       };
     } catch (e) {
       throw Exception('Payment processing failed: ${e.toString()}');
     }
   }
 
-  Future<bool> verifyPayment(String paymentId) async {
-    try {
-      final response = await _supabase
-          .from('payments')
-          .select('status')
-          .eq('id', paymentId)
-          .single();
-
-      return response['status'] == 'valid';
-    } catch (e) {
-      return false;
-    }
-  }
-
-  Future<List<Map<String, dynamic>>> getPaymentHistory(String userId) async {
-    try {
-      final response = await _supabase
-          .from('payments')
-          .select()
-          .eq('user_id', userId)
-          .order('created_at', ascending: false);
-
-      return response;
-    } catch (e) {
-      return [];
-    }
-  }
 }

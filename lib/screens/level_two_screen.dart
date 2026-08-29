@@ -1,4 +1,3 @@
-// screens/content/level_two_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/content_provider.dart';
@@ -94,7 +93,13 @@ class _LevelTwoScreenState extends State<LevelTwoScreen> {
                 }
 
                 final categories = _filterCategories(
-                  provider.levelTwoCategories,
+                  provider.levelTwoCategories
+                        .where((c) =>
+                        c.name
+                          .toLowerCase()
+                          .contains(_searchQuery.toLowerCase()))
+                        .toList()
+                      ..sort((a, b) => (a.index ?? 0).compareTo(b.index ?? 0)),
                 );
 
                 if (categories.isEmpty) {
@@ -140,7 +145,7 @@ class _LevelTwoScreenState extends State<LevelTwoScreen> {
       itemCount: categories.length,
       itemBuilder: (context, index) {
         final category = categories[index];
-        return _buildCategoryCard(category);
+        return _buildCategoryCard(category,index);
       },
     );
   }
@@ -153,13 +158,13 @@ class _LevelTwoScreenState extends State<LevelTwoScreen> {
         final category = categories[index];
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
-          child: _buildCategoryListItem(category),
+          child: _buildCategoryListItem(category,index),
         );
       },
     );
   }
 
-  Widget _buildCategoryCard(dynamic category) {
+  Widget _buildCategoryCard(dynamic category, int index) {
     return Card(
       elevation: 4,
       child: InkWell(
@@ -175,7 +180,7 @@ class _LevelTwoScreenState extends State<LevelTwoScreen> {
         },
         borderRadius: BorderRadius.circular(12),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Category Image or Icon
             Expanded(
@@ -189,7 +194,7 @@ class _LevelTwoScreenState extends State<LevelTwoScreen> {
                 ),
                 child: Center(
                   child: Icon(
-                    _getCategoryIcon(category.name),
+                    _getCategoryIcon(index),
                     size: 48,
                     color: Theme.of(context).colorScheme.primary,
                   ),
@@ -198,11 +203,11 @@ class _LevelTwoScreenState extends State<LevelTwoScreen> {
             ),
             // Category Info
             Expanded(
-              flex: 2,
+              flex: 1,
               child: Padding(
                 padding: const EdgeInsets.all(12),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
                       category.name,
@@ -212,25 +217,6 @@ class _LevelTwoScreenState extends State<LevelTwoScreen> {
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    const Spacer(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '12 videos', // You can add video count to your model
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                            fontSize: 11,
-                          ),
-                        ),
-                        Icon(
-                          Icons.arrow_forward_ios,
-                          size: 14,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ],
                     ),
                   ],
                 ),
@@ -242,7 +228,7 @@ class _LevelTwoScreenState extends State<LevelTwoScreen> {
     );
   }
 
-  Widget _buildCategoryListItem(dynamic category) {
+  Widget _buildCategoryListItem(dynamic category ,int index) {
     return Card(
       child: ListTile(
         contentPadding: const EdgeInsets.all(16),
@@ -254,7 +240,7 @@ class _LevelTwoScreenState extends State<LevelTwoScreen> {
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(
-            _getCategoryIcon(category.name),
+            _getCategoryIcon(index),
             color: Theme.of(context).colorScheme.primary,
             size: 30,
           ),
@@ -269,20 +255,6 @@ class _LevelTwoScreenState extends State<LevelTwoScreen> {
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                '12', // Video count
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  fontSize: 12,
-                ),
-              ),
-            ),
             const SizedBox(width: 8),
             Icon(
               Icons.chevron_right,
@@ -304,42 +276,30 @@ class _LevelTwoScreenState extends State<LevelTwoScreen> {
     );
   }
 
-  IconData _getCategoryIcon(String name) {
-    switch (name.toLowerCase()) {
-      case 'linear equations':
-        return Icons.show_chart;
-      case 'quadratic equations':
-        return Icons.functions;
-      case 'polynomials':
-        return Icons.assessment;
-      case 'مبدأ العد':
-        return Icons.compare_arrows;
-      case 'functions':
-        return Icons.transform;
-      case 'graphs':
-        return Icons.timeline;
-      case 'exponents':
-        return Icons.superscript;
-      case 'logarithms':
-        return Icons.trending_down;
-      case 'matrices':
-        return Icons.grid_on;
-      case 'determinants':
-        return Icons.calculate;
-      case 'دائرة':
-        return Icons.architecture;
-      case 'geometry':
-        return Icons.category;
-      case 'إحصاء':
-        return Icons.bar_chart;
-      case 'probability':
-        return Icons.pie_chart;
-      case 'calculus':
-        return Icons.trending_up;
-      case 'vectors':
-        return Icons.arrow_forward;
-      default:
-        return Icons.menu_book;
-    }
+  IconData _getCategoryIcon(int index) {
+    return _categoryIcons[index % _categoryIcons.length];
   }
 }
+
+ const List<IconData> _categoryIcons = [
+  Icons.show_chart,
+  Icons.functions,
+  Icons.assessment,
+  Icons.compare_arrows,
+  Icons.transform,
+  Icons.timeline,
+  Icons.superscript,
+  Icons.trending_down,
+  Icons.grid_on,
+  Icons.calculate,
+  Icons.architecture,
+  Icons.category,
+  Icons.bar_chart,
+  Icons.pie_chart,
+  Icons.trending_up,
+  Icons.arrow_forward,
+  Icons.menu_book,
+  Icons.auto_awesome,
+  Icons.science,
+  Icons.psychology,
+];

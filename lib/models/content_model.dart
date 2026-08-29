@@ -1,16 +1,16 @@
-// models/content_model.dart
-
 class Category {
   final String id;
   final String name;
   final int level;
   final String? parentId;
+  final int? index;
 
   Category({
     required this.id,
     required this.name,
     required this.level,
     this.parentId,
+    this.index
   });
 
   factory Category.fromJson(Map<String, dynamic> json) {
@@ -19,6 +19,7 @@ class Category {
       name: json['name'] ?? '',
       level: json['level'] ?? 1,
       parentId: json['parent_id'],
+      index: json['index'],
     );
   }
 
@@ -28,6 +29,7 @@ class Category {
       'name': name,
       'level': level,
       'parent_id': parentId,
+      'index': index,
     };
   }
 }
@@ -96,7 +98,6 @@ class Example {
   final String thumbnail;
   final String? videoId;
   final List<Solution> solutions;
-  final Video? video;
 
   Example({
     required this.id,
@@ -106,7 +107,6 @@ class Example {
     required this.thumbnail,
     this.videoId,
     this.solutions = const [],
-    this.video,
   });
 
   factory Example.fromJson(Map<String, dynamic> json) {
@@ -133,7 +133,6 @@ class Example {
       thumbnail: json['thumbnail'] ?? '',
       videoId: json['video_id'],
       solutions: solutionsList,
-      video: json['videos'] != null ? Video.fromJson(json['videos']) : null,
     );
   }
 
@@ -146,7 +145,6 @@ class Example {
       'thumbnail': thumbnail,
       'video_id': videoId,
       'options': solutions.map((s) => s.toJson()).toList(),
-      'videos': video?.toJson(),
     };
   }
 }

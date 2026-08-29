@@ -1,11 +1,8 @@
-// screens/content/video_player_screen.dart
 import 'dart:async';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:media_kit/media_kit.dart';
-import 'package:media_kit_video/media_kit_video.dart';
-import '../services/video_cache_service.dart';
+import 'package:video_player/video_player.dart';
+import '../providers/video_provider.dart'; // your VideoCacheManager
 
 class VideoPlayerScreen extends StatefulWidget {
   final String videoId;
@@ -23,10 +20,8 @@ class VideoPlayerScreen extends StatefulWidget {
 
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   final VideoCacheManager manager = VideoCacheManager();
-  
-  late final Player _player = Player();
-  late final VideoController _controller = VideoController(_player);
 
+  VideoPlayerController? _controller;
   bool _isReady = false;
   bool _showIcon = false;
   Timer? _hideTimer;
@@ -34,33 +29,96 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   Future<void> _initVideo() async {
     try {
-      File? file = await manager.getLocalVideo(widget.videoId);
-      file ??= await manager.downloadVideo(widget.videoUrl, widget.videoId);
+      // 1. Try local cache first (instant start if already downloaded)
+      File? localFile = await manager.getLocalVideo(widget.videoId);
 
-      if (file == null || !mounted) return;
+      if (localFile != null && await localFile.exists()) {
+        // Already cached → play local file
+        await _playFromFile(localFile);
+        return;
+      }
 
-      final String path = Platform.isWindows ? file.path : 'file://${file.path}';
-      await _player.open(Media(path));
-      await _player.play();
+      // 2. Not cached → play from network immediately
+      await _playFromNetwork(widget.videoUrl);
 
-      if (!mounted) return;
-
-      _player.stream.playing.listen((playing) {
-        if (!mounted) return;
-        setState(() => _isPlaying = playing);
-      });
-
-      setState(() {
-        _isReady = true;
-      });
+      // 3. Download in the background (don’t await)
+      _downloadInBackground();
     } catch (e) {
       debugPrint('Video init error: $e');
     }
   }
 
+  Future<void> _playFromNetwork(String url) async {
+    final controller = VideoPlayerController.networkUrl(Uri.parse(url));
+
+    await controller.initialize();
+    if (!mounted) {
+      controller.dispose();
+      return;
+    }
+
+    _attachListeners(controller);
+    await controller.play();
+
+    setState(() {
+      _controller = controller;
+      _isReady = true;
+      _isPlaying = true;
+    });
+  }
+
+  Future<void> _playFromFile(File file) async {
+    final controller = VideoPlayerController.file(file);
+
+    await controller.initialize();
+    if (!mounted) {
+      controller.dispose();
+      return;
+    }
+
+    _attachListeners(controller);
+    await controller.play();
+
+    setState(() {
+      _controller = controller;
+      _isReady = true;
+      _isPlaying = true;
+    });
+  }
+
+  void _attachListeners(VideoPlayerController controller) {
+    controller.addListener(() {
+      if (!mounted) return;
+      final playing = controller.value.isPlaying;
+      if (playing != _isPlaying) {
+        setState(() => _isPlaying = playing);
+      }
+    });
+  }
+
+  /// Downloads the video without blocking playback
+  void _downloadInBackground() {
+    // Fire and forget
+    manager.downloadVideo(widget.videoUrl, widget.videoId).then((file) {
+      if (file != null) {
+        debugPrint('Video cached successfully: ${file.path}');
+        // Optional: you could switch to the local file here,
+        // but it’s usually not necessary while the user is watching.
+      }
+    }).catchError((e) {
+      debugPrint('Background download failed: $e');
+    });
+  }
+
   Future<void> _togglePlayPause() async {
-    if (!_isReady) return;
-    await _player.playOrPause();
+    final controller = _controller;
+    if (!_isReady || controller == null) return;
+
+    if (controller.value.isPlaying) {
+      await controller.pause();
+    } else {
+      await controller.play();
+    }
 
     setState(() => _showIcon = true);
     _hideTimer?.cancel();
@@ -79,7 +137,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   @override
   void dispose() {
     _hideTimer?.cancel();
-    _player.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
@@ -87,7 +145,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      // Transparent AppBar for the back button
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -100,30 +157,30 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       body: GestureDetector(
         onTap: _togglePlayPause,
         child: Center(
-          child: _isReady
+          child: _isReady && _controller != null
               ? Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    SizedBox(
-                      width: double.infinity,
-                      child: Video(controller: _controller),
-                    ),
-                    AnimatedOpacity(
-                      opacity: _showIcon ? 1 : 0,
-                      duration: const Duration(milliseconds: 100),
-                      child: IgnorePointer(
-                        child: Icon(
-                          _isPlaying
-                              ? Icons.pause_circle_filled
-                              : Icons.play_circle_filled,
-                          size: 72,
-                          color: Colors.white.withValues(alpha: 0.9),
-                        ),
-                      ),
-                    ),
-                  ],
-                )
-              : const CircularProgressIndicator(color: Colors.white),
+            alignment: Alignment.center,
+            children: [
+              AspectRatio(
+                aspectRatio: _controller!.value.aspectRatio,
+                child: VideoPlayer(_controller!),
+              ),
+              AnimatedOpacity(
+                opacity: _showIcon ? 1.0 : 0.0,
+                duration: const Duration(milliseconds: 100),
+                child: IgnorePointer(
+                  child: Icon(
+                    _isPlaying
+                        ? Icons.pause_circle_filled
+                        : Icons.play_circle_filled,
+                    size: 72,
+                    color: Colors.white.withValues(alpha: 0.9),
+                  ),
+                ),
+              ),
+            ],
+          )
+              : const CircularProgressIndicator(color: Colors.blue),
         ),
       ),
     );

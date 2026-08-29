@@ -5,7 +5,9 @@ import '../../providers/auth_provider.dart';
 import '../../providers/subscription_provider.dart';
 import '../../providers/theme_provider.dart';
 import '../../providers/favorites_provider.dart';
-import '../widgets/custom_painter.dart';
+
+import 'package:url_launcher/url_launcher.dart';
+import '../config/constants.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -118,12 +120,12 @@ class _HomeScreenState extends State<HomeScreen> {
         final colorScheme = theme.colorScheme;
 
         return SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
+          padding: const EdgeInsets.fromLTRB(20, 6, 20, 100),
           child: Column(
 
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 21),
+              const SizedBox(height: 10),
               Card(
                 elevation: 0,
                 color: colorScheme.surfaceContainerLow,
@@ -131,7 +133,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -143,14 +145,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Text(
                               authProvider.user?.fullName.isNotEmpty == true
                                   ? authProvider.user!.fullName.substring(0, 1).toUpperCase()
-                                  : 'A',
+                                  : 'ز',
                               style: theme.textTheme.headlineSmall?.copyWith(
                                 color: colorScheme.onPrimary,
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
                           ),
-                          const SizedBox(width: 16),
+                          const SizedBox(width: 20),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -175,7 +177,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 17),
                       if (authProvider.user == null)
                         Container(
                           width: double.infinity,
@@ -314,7 +316,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                     const SizedBox(height: 2),
                                     Text(
-                                      'قم بالترقية لمشاهدة كل الدروس',
+                                      'قم بالأشتراك في خطة لمشاهدة فيديوهات الشرح',
                                       style: TextStyle(
                                         color: Colors.grey[600],
                                         fontSize: 12,
@@ -350,110 +352,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 32),
-              Container(
-                alignment:Alignment.center,
-                child: Text(
-                  'الأعلى مشاهدة في علمي',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
+              SoftInfoCard(
+                title: 'للطلاب',
+                subtitle: 'للإستفادة القصوى من التطبيق',
+                items: [
+                  'راجع درسك أولاُ',
+                  'حل الأسئلة في ورقة خارجية',
+                  'سؤالك يكمل فهمك',
+                ],
+                onTap: () { },
               ),
               const SizedBox(height: 14),
-              SizedBox(
-                height: 130,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  physics: const BouncingScrollPhysics(),
-                  children: [
-                    _buildTopicChip(
-                      'مبدأ العد',
-                      Icons.functions_rounded,
-                      Colors.blue,
-                      onTap: () => Navigator.pushNamed(
-                        context,
-                        '/level-four',
-                        arguments: {
-                          'categoryId': 'PLACEHOLDER_ID_1',
-                          'categoryName': 'مبدأ العد',
-                        },
-                      ),
-                    ),
-                    _buildTopicChip(
-                      'التباديل',
-                      Icons.category_rounded,
-                      Colors.green,
-                      onTap: () => Navigator.pushNamed(
-                        context,
-                        '/level-four',
-                        arguments: {
-                          'categoryId': 'PLACEHOLDER_ID_2',
-                          'categoryName': 'التباديل',
-                        },
-                      ),
-                    ),
-                    _buildTopicChip(
-                      'التوافيق',
-                      Icons.trending_up_rounded,
-                      Colors.orange,
-                      onTap: () => Navigator.pushNamed(
-                        context,
-                        '/level-four',
-                        arguments: {
-                          'categoryId': 'PLACEHOLDER_ID_3',
-                          'categoryName': 'التوافيق',
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 32),
-              Container(
-                alignment:Alignment.center,
-                child: Text(
-                  'الأعلى مشاهدة في أدبي',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 14),
-              SizedBox(
-                height: 130,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  physics: const BouncingScrollPhysics(),
-                  children: [
-                    _buildTopicChip(
-                      'إحصاء',
-                      Icons.bar_chart_rounded,
-                      Colors.purple,
-                      onTap: () => Navigator.pushNamed(
-                        context,
-                        '/level-four',
-                        arguments: {
-                          'categoryId': 'PLACEHOLDER_ID_4',
-                          'categoryName': 'إحصاء',
-                        },
-                      ),
-                    ),
-                    _buildTopicChip(
-                      'احتمالات',
-                      Icons.pie_chart_rounded,
-                      Colors.teal,
-                      onTap: () => Navigator.pushNamed(
-                        context,
-                        '/level-four',
-                        arguments: {
-                          'categoryId': 'PLACEHOLDER_ID_5',
-                          'categoryName': 'احتمالات',
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              PromoAdCard(),
             ],
           ),
         );
@@ -462,174 +372,118 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildFavoritesTab() {
-    return  CustomPaint(
-        painter: PaperBackgroundPainter(),
-        size: Size.infinite,
-        child:Consumer2<FavoritesProvider, SubscriptionProvider>(
-      builder: (context, favoritesProvider, subscriptionProvider, _) {
-        final favorites = favoritesProvider.favoriteExamples;
-        final theme = Theme.of(context);
-        final colorScheme = theme.colorScheme;
+    return  Consumer2<FavoritesProvider, SubscriptionProvider>(
+          builder: (context, favoritesProvider, subscriptionProvider, _) {
+    final favorites = favoritesProvider.favoriteExamples;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
-        if (favorites.isEmpty) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+    if (favorites.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 110,
+                height: 110,
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.favorite_border_rounded,
+                  size: 52,
+                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'لا يوجد مفضلة بعد',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'ابدأ باستكشاف التمارين وأضف سؤال لحفظه هنا',
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
+                ),
+              ),
+              const SizedBox(height: 28),
+              FilledButton.icon(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/level-one');
+                },
+                icon: const Icon(Icons.explore_rounded),
+                label: const Text('إستكشف التمارين'),
+                style: FilledButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 14,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: favorites.length,
+      itemBuilder: (context, index)  {
+        final example = favorites[index];
+
+        return Card(
+          clipBehavior: Clip.antiAlias,
+          margin: const EdgeInsets.only(bottom: 16),
+          elevation: 2,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          child: InkWell(
+            onTap: () {
+                Navigator.pushNamed(
+                  context,
+                  '/example-page',
+                  arguments: {
+                    'examples': favorites,
+                    'index': index,
+                  },
+                );
+            },
+            child: AspectRatio(
+              aspectRatio: 16 / 9,
+              child: Stack(
+                fit: StackFit.expand,
                 children: [
-                  Container(
-                    width: 110,
-                    height: 110,
-                    decoration: BoxDecoration(
-                      color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.favorite_border_rounded,
-                      size: 52,
-                      color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'لا يوجد مفضلة بعد',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'ابدأ باستكشاف التمارين وأضف ما يعجبك إلى المفضلة',
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
-                    ),
-                  ),
-                  const SizedBox(height: 28),
-                  FilledButton.icon(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/level-one');
-                    },
-                    icon: const Icon(Icons.explore_rounded),
-                    label: const Text('إستكشف التمارين'),
-                    style: FilledButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 14,
-                      ),
+                  Image.network(example.thumbnail, fit: BoxFit.cover),
+                  // Remove Favorite
+                  Positioned(
+                    top: 12,
+                    left: 12,
+                    child: IconButton.filledTonal(
+                      onPressed: () => favoritesProvider.toggleFavorite(example),
+                      icon: const Icon(Icons.favorite_rounded, color: Colors.red),
                     ),
                   ),
                 ],
               ),
             ),
-          );
-        }
-
-        return ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: favorites.length,
-          itemBuilder: (context, index) {
-            final example = favorites[index];
-            final canAccess = subscriptionProvider.canAccessContent(
-                example.video?.isPremium ?? true);
-
-            return Card(
-              clipBehavior: Clip.antiAlias,
-              margin: const EdgeInsets.only(bottom: 16),
-              elevation: 2,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-              child: InkWell(
-                onTap: () {
-                  if (!canAccess) {
-                    _showSubscriptionDialog(context);
-                  } else {
-                    Navigator.pushNamed(
-                      context,
-                      '/example-page',
-                      arguments: {
-                        'examples': favorites,
-                        'index': index,
-                      },
-                    );
-                  }
-                },
-                child: AspectRatio(
-                  aspectRatio: 16 / 9,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Image.network(example.thumbnail, fit: BoxFit.cover),
-                      // Remove Favorite
-                      Positioned(
-                        top: 12,
-                        left: 12,
-                        child: IconButton.filledTonal(
-                          onPressed: () => favoritesProvider.toggleFavorite(example),
-                          icon: const Icon(Icons.favorite_rounded, color: Colors.red),
-                        ),
-                      ),
-                      Center(
-                        child: Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.4),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            canAccess ? Icons.question_answer_rounded : Icons.lock_rounded,
-                            size: 32,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                      if (example.video?.isPremium ?? true)
-                        Positioned(
-                          top: 12,
-                          right: 12,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.amber.shade700,
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: const Text(
-                              'مدفوع',
-                              style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
+          ),
         );
       },
-    ));
+    );
+          },
+        );
   }
 
-  void _showSubscriptionDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('محتوى مدفوع'),
-        content: const Text('هذا التمرين ضمن المحتوى المدفوع قم بالترقية لمشاهدته'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('إلغاء')),
-          FilledButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pushNamed(context, '/payment');
-            },
-            child: const Text('ترقية'),
-          ),
-        ],
-      ),
-    );
-  }
+
+
 
   Widget _buildProfileTab() {
     return Consumer<AuthProvider>(
@@ -918,54 +772,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // ─── Helper Widgets ───────────────────────────────────────────────────────
-
-  Widget _buildTopicChip(String title, IconData icon, Color color, {VoidCallback? onTap}) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 14),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap ?? () {
-            Navigator.pushNamed(context, '/level-one');
-          },
-          borderRadius: BorderRadius.circular(18),
-          child: Ink(
-            width: 110,
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: color.withValues(alpha: 0.22)),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.18),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(icon, color: color, size: 28),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  title,
-                  style: TextStyle(
-                    color: color,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 13,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildProfileTile({
     required IconData icon,
     required String title,
@@ -1020,3 +826,268 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+
+class SoftInfoCard extends StatelessWidget {
+  final String title;
+  final String? subtitle;
+  final List<String> items;
+  final IconData? leadingIcon;
+  final VoidCallback? onTap;
+  final Color? accentColor;
+
+  const SoftInfoCard({
+    super.key,
+    required this.title,
+    this.subtitle,
+    required this.items,
+    this.leadingIcon,
+    this.onTap,
+    this.accentColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final primary = accentColor ?? colorScheme.primary;
+
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Card(
+        elevation: 0,
+        color: colorScheme.surfaceContainerLow,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Title + Subtitle
+                Text(
+                  title,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                if (subtitle != null) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle!,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+
+                if (items.isNotEmpty) ...[
+                  const SizedBox(height: 11),
+                  Divider(height: 1, color: primary.withOpacity(0.15)),
+                  const SizedBox(height: 12),
+
+                  ...items.map((item) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(top: 7, left: 10),
+                            width: 6,
+                            height: 6,
+                            decoration: BoxDecoration(
+                              color: primary,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              item,
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                color: colorScheme.onSurface.withOpacity(0.85),
+                                height: 1.4,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class PromoAdCard extends StatelessWidget {
+  const PromoAdCard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    // Keep the strong promotional look but adapt to dark mode
+    final purple = isDark ? const Color(0xFF9B59B6) : const Color(0xFF6B2D8B);
+    final yellow = isDark ? const Color(0xFFFFD54F) : const Color(0xFFFFF176);
+    final red = isDark ? const Color(0xFFEF5350) : const Color(0xFFD32F2F);
+
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Container(
+        margin: const EdgeInsets.only(top: 8, bottom: 12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: purple.withOpacity(0.30),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Column(
+            children: [
+              // Top banner
+              Container(
+                width: double.infinity,
+                color: purple,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                child: const Text(
+                  'بداية مجموعات 2027',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+
+              // Middle yellow section
+              Container(
+                width: double.infinity,
+                color: yellow,
+                padding: const EdgeInsets.fromLTRB(16, 18, 16, 18),
+                child: Column(
+                  children: [
+                    Text(
+                      'الرياضيات',
+                      style: TextStyle(
+                        color: red,
+                        fontSize: 34,
+                        fontWeight: FontWeight.w900,
+                        height: 1.1,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 11),
+                            decoration: BoxDecoration(
+                              color: purple,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Text(
+                              'ONLINE',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        Container(
+                          width: 68,
+                          height: 68,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: purple, width: 2.5),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.asset(
+                              'assets/images/img_1.png',
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => Icon(
+                                Icons.person,
+                                size: 36,
+                                color: purple,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              // Bottom CTA
+              Container(
+                width: double.infinity,
+                color: purple,
+                padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+                child: ElevatedButton(
+                  onPressed: () {
+                    _launchWhatsApp(context, 'أود الاستفسار عن مجموعات 2027');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: yellow,
+                    foregroundColor: purple,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    elevation: 3,
+                  ),
+                  child: const Text(
+                    'أحجز عبر الواتساب',
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+Future<void> _launchWhatsApp(BuildContext context,String massage) async {
+  final String number = AppConstants.whatsappNumber;
+  final String message = Uri.encodeComponent(massage);
+  final Uri url = Uri.parse("https://wa.me/$number?text=$message");
+
+  try {
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      throw Exception('Could not launch WhatsApp');
+    }
+  } catch (e) {
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تعذر فتح واتساب. يرجى التأكد من تثبيته.')),
+      );
+    }
+  }
+}
+

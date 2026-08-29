@@ -1,13 +1,32 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../config/constants.dart';
 import 'package:path_provider/path_provider.dart';
+import '../models/content_model.dart';
 
 class VideoCacheManager {
-  static const int maxVideos = AppConstants.localVideosLimit;
+  static const int maxVideos = 40;
   static const String videoDirName = 'LocalCach';
 
+  Future<Video?> featchvideopublic(videoId) async{
+    final data = await  Supabase.instance.client
+        .from('videos')
+        .select('is_premium,plan_type')
+        .eq('id',videoId)
+        .maybeSingle();
+    return Video.fromJson(data!);
+  }
+
+  Future<Video?> fetchvideourl(videoId) async{
+    final data = await  Supabase.instance.client
+        .from('videos')
+        .select('video_url')
+        .eq('id',videoId)
+        .maybeSingle();
+    return Video.fromJson(data!);
+
+
+  }
   Future<Directory> getVideoDirectory() async {
     final appDir = await getApplicationDocumentsDirectory();
     final videoDir = Directory('${appDir.path}/$videoDirName');
