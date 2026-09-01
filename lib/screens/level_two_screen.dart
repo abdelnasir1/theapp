@@ -19,68 +19,69 @@ class _LevelTwoScreenState extends State<LevelTwoScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ContentProvider>().fetchLevelTwoCategories(widget.categoryId);
+      context
+          .read<ContentProvider>()
+          .fetchLevelTwoCategories(widget.categoryId);
     });
-  }
-
-  List<dynamic> _filterCategories(List<dynamic> categories) {
-    var filtered = categories;
-
-    // Apply search filter
-    if (_searchQuery.isNotEmpty) {
-      filtered = filtered.where((category) {
-        return category.name.toLowerCase().contains(_searchQuery.toLowerCase());
-      }).toList();
-    }
-
-    // Apply sorting
-    return filtered;
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
-        title: const Text('الباب'),
+        elevation: 0,
+        backgroundColor: colorScheme.surface,
+        surfaceTintColor: Colors.transparent,
+        title: Text(
+          'اختر الباب',
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+        centerTitle: true,
         actions: [
           IconButton(
-            icon: Icon(_isGridView ? Icons.list : Icons.grid_view),
-            onPressed: () {
-              setState(() {
-                _isGridView = !_isGridView;
-              });
-            },
+            icon: Icon(_isGridView ? Icons.list_rounded : Icons.grid_view_rounded),
+            color: colorScheme.primary,
+            onPressed: () => setState(() => _isGridView = !_isGridView),
           ),
+          const SizedBox(width: 8),
         ],
       ),
       body: Column(
         children: [
-          // Search Bar
+          // Harmonic Search Bar
           Padding(
-            padding: const EdgeInsets.all(16),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'ابحث عن باب ',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                suffixIcon: _searchQuery.isNotEmpty
-                    ? IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: () {
-                    setState(() {
-                      _searchQuery = '';
-                    });
-                  },
-                )
-                    : null,
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
+            child: Container(
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: colorScheme.shadow.withValues(alpha: 0.05),
+                    blurRadius: 15,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
               ),
-              onChanged: (value) {
-                setState(() {
-                  _searchQuery = value;
-                });
-              },
+              child: TextField(
+                textAlign: TextAlign.right,
+                decoration: InputDecoration(
+                  hintText: 'ابحث عن باب...',
+                  prefixIcon: Icon(Icons.search_rounded, color: colorScheme.primary),
+                  filled: true,
+                  fillColor: colorScheme.surfaceContainerLow,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                onChanged: (value) => setState(() => _searchQuery = value),
+              ),
             ),
           ),
 
@@ -92,31 +93,27 @@ class _LevelTwoScreenState extends State<LevelTwoScreen> {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                final categories = _filterCategories(
-                  provider.levelTwoCategories
-                        .where((c) =>
-                        c.name
-                          .toLowerCase()
-                          .contains(_searchQuery.toLowerCase()))
-                        .toList()
-                      ..sort((a, b) => (a.index ?? 0).compareTo(b.index ?? 0)),
-                );
+                final categories = provider.levelTwoCategories
+                    .where((c) => c.name
+                        .toLowerCase()
+                        .contains(_searchQuery.toLowerCase()))
+                    .toList()
+                  ..sort((a, b) => (a.index ?? 0).compareTo(b.index ?? 0));
 
                 if (categories.isEmpty) {
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.search_off,
-                          size: 64,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
-                        ),
-                        const SizedBox(height: 16),
-                        Text( 'لا يوجد باب بهذا الإسم "$_searchQuery"',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        Icon(Icons.search_off_rounded,
+                            size: 80,
+                            color: colorScheme.primary.withValues(alpha: 0.1)),
+                        const SizedBox(height: 20),
+                        Text(
+                          'لا توجد نتائج لـ "$_searchQuery"',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ],
@@ -124,7 +121,12 @@ class _LevelTwoScreenState extends State<LevelTwoScreen> {
                   );
                 }
 
-                return _isGridView ? _buildGridView(categories) : _buildListView(categories);
+                return AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  child: _isGridView
+                      ? _buildGridView(categories, colorScheme, theme)
+                      : _buildListView(categories, colorScheme, theme),
+                );
               },
             ),
           ),
@@ -133,173 +135,138 @@ class _LevelTwoScreenState extends State<LevelTwoScreen> {
     );
   }
 
-  Widget _buildGridView(List<dynamic> categories) {
+  Widget _buildGridView(
+      List<dynamic> categories, ColorScheme colorScheme, ThemeData theme) {
     return GridView.builder(
-      padding: const EdgeInsets.all(16),
+      key: const ValueKey('grid'),
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
         childAspectRatio: 0.85,
       ),
       itemCount: categories.length,
       itemBuilder: (context, index) {
         final category = categories[index];
-        return _buildCategoryCard(category,index);
-      },
-    );
-  }
-
-  Widget _buildListView(List<dynamic> categories) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: categories.length,
-      itemBuilder: (context, index) {
-        final category = categories[index];
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: _buildCategoryListItem(category,index),
+        return Card(
+          elevation: 0,
+          color: colorScheme.surfaceContainerLow,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+            side: BorderSide(color: colorScheme.outlineVariant, width: 0.5),
+          ),
+          child: InkWell(
+            onTap: () {
+              Navigator.pushNamed(
+                context,
+                '/level-three',
+                arguments: {
+                  'categoryId': category.id,
+                  'categoryName': category.name,
+                },
+              );
+            },
+            borderRadius: BorderRadius.circular(24),
+            child: Column(
+              children: [
+                Expanded(
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: colorScheme.primary.withValues(alpha: 0.05),
+                      borderRadius:
+                          const BorderRadius.vertical(top: Radius.circular(24)),
+                    ),
+                    child: Icon(
+                      _getCategoryIcon(index),
+                      size: 48,
+                      color: colorScheme.primary,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Text(
+                    category.name,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w900,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
         );
       },
     );
   }
 
-  Widget _buildCategoryCard(dynamic category, int index) {
-    return Card(
-      elevation: 4,
-      child: InkWell(
-        onTap: () {
-          Navigator.pushNamed(
-            context,
-            '/level-three',
-            arguments: {
-              'categoryId': category.id,
-              'categoryName': category.name,
-            },
-          );
-        },
-        borderRadius: BorderRadius.circular(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Category Image or Icon
-            Expanded(
-              flex: 3,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.2),
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(12),
-                  ),
-                ),
-                child: Center(
-                  child: Icon(
-                    _getCategoryIcon(index),
-                    size: 48,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
+  Widget _buildListView(
+      List<dynamic> categories, ColorScheme colorScheme, ThemeData theme) {
+    return ListView.builder(
+      key: const ValueKey('list'),
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+      itemCount: categories.length,
+      itemBuilder: (context, index) {
+        final category = categories[index];
+        return Card(
+          elevation: 0,
+          margin: const EdgeInsets.only(bottom: 12),
+          color: colorScheme.surfaceContainerLow,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: BorderSide(color: colorScheme.outlineVariant, width: 0.5),
+          ),
+          child: ListTile(
+            contentPadding: const EdgeInsets.all(12),
+            leading: Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: colorScheme.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(16),
               ),
+              child: Icon(_getCategoryIcon(index), color: colorScheme.primary),
             ),
-            // Category Info
-            Expanded(
-              flex: 1,
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      category.name,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
+            title: Text(
+              category.name,
+              style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCategoryListItem(dynamic category ,int index) {
-    return Card(
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(16),
-        leading: Container(
-          width: 60,
-          height: 60,
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Icon(
-            _getCategoryIcon(index),
-            color: Theme.of(context).colorScheme.primary,
-            size: 30,
-          ),
-        ),
-        title: Text(
-          category.name,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
-        ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(width: 8),
-            Icon(
-              Icons.chevron_right,
-              color: Colors.grey[400],
-            ),
-          ],
-        ),
-        onTap: () {
-          Navigator.pushNamed(
-            context,
-            '/level-three',
-            arguments: {
-              'categoryId': category.id,
-              'categoryName': category.name,
+            trailing: Icon(Icons.chevron_right_rounded,
+                color: colorScheme.onSurfaceVariant),
+            onTap: () {
+              Navigator.pushNamed(
+                context,
+                '/level-three',
+                arguments: {
+                  'categoryId': category.id,
+                  'categoryName': category.name,
+                },
+              );
             },
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 
   IconData _getCategoryIcon(int index) {
-    return _categoryIcons[index % _categoryIcons.length];
+    const icons = [
+      Icons.show_chart_rounded,
+      Icons.functions_rounded,
+      Icons.assessment_rounded,
+      Icons.compare_arrows_rounded,
+      Icons.transform_rounded,
+      Icons.timeline_rounded,
+      Icons.superscript_rounded,
+      Icons.trending_down_rounded,
+      Icons.grid_on_rounded,
+      Icons.calculate_rounded,
+    ];
+    return icons[index % icons.length];
   }
 }
-
- const List<IconData> _categoryIcons = [
-  Icons.show_chart,
-  Icons.functions,
-  Icons.assessment,
-  Icons.compare_arrows,
-  Icons.transform,
-  Icons.timeline,
-  Icons.superscript,
-  Icons.trending_down,
-  Icons.grid_on,
-  Icons.calculate,
-  Icons.architecture,
-  Icons.category,
-  Icons.bar_chart,
-  Icons.pie_chart,
-  Icons.trending_up,
-  Icons.arrow_forward,
-  Icons.menu_book,
-  Icons.auto_awesome,
-  Icons.science,
-  Icons.psychology,
-];

@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.untitled1"
+    namespace = "com.maazplatform.solutions"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 

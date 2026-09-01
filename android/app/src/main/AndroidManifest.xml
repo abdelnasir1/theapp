@@ -3,7 +3,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <application
-        android:label="untitled1"
+        android:label="MPS"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

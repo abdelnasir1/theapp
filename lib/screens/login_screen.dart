@@ -77,8 +77,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   const SizedBox(height: 28),
 
-                  // Divider with text
-
                   // Google Login Button (UI only)
                   SizedBox(
                     width: double.infinity,

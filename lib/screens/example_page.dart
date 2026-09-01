@@ -4,7 +4,6 @@ import '../widgets/example_widget.dart';
 import '../models/content_model.dart';
 import '../providers/auth_provider.dart';
 import '../providers/subscription_provider.dart';
-import '../widgets/custom_painter.dart';
 import '../providers/video_provider.dart';
 
 enum AppPlan {
@@ -22,6 +21,7 @@ enum AppPlan {
     return code ?? 'غير معروفة';
   }
 }
+
 class ExamplePage extends StatefulWidget {
   final List<Example> examples;
   final int initialIndex;
@@ -52,7 +52,7 @@ class _ExamplePageState extends State<ExamplePage> {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           isAuthenticated ? 'محتوى مدفوع' : 'تسجيل الدخول مطلوب',
@@ -67,12 +67,12 @@ class _ExamplePageState extends State<ExamplePage> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: const Text('إلغاء'),
           ),
           FilledButton(
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
               if (isAuthenticated) {
                 Navigator.pushNamed(context, '/payment');
               } else {
@@ -90,7 +90,6 @@ class _ExamplePageState extends State<ExamplePage> {
   Widget build(BuildContext context) {
     final currentExample = widget.examples[_currentIndex];
     final subscriptionProvider = context.watch<SubscriptionProvider>();
-
 
     return ExampleWidget(
       data: currentExample,
@@ -110,23 +109,33 @@ class _ExamplePageState extends State<ExamplePage> {
             }
           : null,
       onVideo: () async {
-        final video = await VideoCacheManager().featchvideopublic(currentExample.videoId);
-        if (currentExample.videoId != null) {
+        final video =
+            await VideoCacheManager().featchvideopublic(currentExample.videoId);
+        
+        if (!mounted) return;
+
+        if (currentExample.videoId != null && video != null) {
           final canAccess = subscriptionProvider.canAccessContent(
-             video!.isPremium,
+            video.isPremium,
             planType: video.planType,
           );
 
           if (canAccess) {
-            final videourl = await VideoCacheManager().fetchvideourl(currentExample.videoId);
-            Navigator.pushNamed(
-              context,
-              '/video-player',
-              arguments: {
-                'videoId': currentExample.id,
-                'videoUrl': videourl?.videoUrl,
-              },
-            );
+            final videourl =
+                await VideoCacheManager().fetchvideourl(currentExample.videoId!);
+            
+            if (!mounted) return;
+            
+            if (videourl != null) {
+              Navigator.pushNamed(
+                context,
+                '/video-player',
+                arguments: {
+                  'videoId': currentExample.id,
+                  'videoUrl': videourl.videoUrl,
+                },
+              );
+            }
           } else {
             _showSubscriptionDialog(context, planCode: video.planType);
           }

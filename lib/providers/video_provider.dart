@@ -1,103 +1,128 @@
 import 'dart:io';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
-import '../models/content_model.dart';
+import '../config/constants.dart';
 
 class VideoCacheManager {
-  static const int maxVideos = 40;
-  static const String videoDirName = 'LocalCach';
+  static final VideoCacheManager _instance = VideoCacheManager._internal();
+  factory VideoCacheManager() => _instance;
+  VideoCacheManager._internal();
 
-  Future<Video?> featchvideopublic(videoId) async{
-    final data = await  Supabase.instance.client
-        .from('videos')
-        .select('is_premium,plan_type')
-        .eq('id',videoId)
-        .maybeSingle();
-    return Video.fromJson(data!);
-  }
+  final SupabaseClient _supabase = Supabase.instance.client;
+  final Map<String, VideoModel> _videoCache = {};
 
-  Future<Video?> fetchvideourl(videoId) async{
-    final data = await  Supabase.instance.client
-        .from('videos')
-        .select('video_url')
-        .eq('id',videoId)
-        .maybeSingle();
-    return Video.fromJson(data!);
+  Future<VideoModel?> featchvideopublic(String? videoId) async {
+    if (videoId == null) return null;
+    if (_videoCache.containsKey(videoId)) return _videoCache[videoId];
 
-
-  }
-  Future<Directory> getVideoDirectory() async {
-    final appDir = await getApplicationDocumentsDirectory();
-    final videoDir = Directory('${appDir.path}/$videoDirName');
-    if (!await videoDir.exists()) {
-      await videoDir.create(recursive: true);
-    }
-    return videoDir;
-  }
-
-  // Get all video files sorted by last modified (oldest first)
-  Future<List<File>> getSortedVideos() async {
-    final dir = await getVideoDirectory();
-    final files = await dir.list().where((entity) => entity is File).cast<File>().toList();
-
-    // Sort by last modified date (oldest first)
-    files.sort((a, b) => a.lastModifiedSync().compareTo(b.lastModifiedSync()));
-    return files;
-  }
-
-  // Enforce limit + LRU
-  Future<void> enforceLimit() async {
-    final videos = await getSortedVideos();
-    if (videos.length <= maxVideos) return;
-
-    final toDelete = videos.sublist(0, videos.length - maxVideos); // Oldest ones
-    for (var file in toDelete) {
-      await file.delete();
-      debugPrint('Deleted old video: ${file.path}');
-    }
-  }
-  String getPathFromUrl(String url) {
-    final uri = Uri.parse(url);
-    final segments = uri.pathSegments;
-    final bucketIndex = segments.indexOf('videos'); // your bucket name
-    if (bucketIndex == -1 || bucketIndex + 1 >= segments.length) {
-      throw Exception('Invalid Supabase storage URL');
-    }
-
-    late final path = segments.sublist(bucketIndex + 1).join('/');
-    return path;
-  }
-  Future<File?> downloadVideo(String supabasePath, String localFileName) async {
     try {
-      await enforceLimit();
-      var videopath = getPathFromUrl(supabasePath);
-      final response = await  Supabase.instance.client.storage
+      final data = await _supabase
           .from('videos')
-          .download(videopath);
+          .select()
+          .eq('id', videoId)
+          .single();
 
-      final dir = await getVideoDirectory();
-      final file = File('${dir.path}/$localFileName');
-      await file.writeAsBytes(response);
-
-      debugPrint('Saved: ${file.path}');
-      return file;
+      final video = VideoModel.fromJson(data);
+      _videoCache[videoId] = video;
+      return video;
     } catch (e) {
+      debugPrint('Error fetching video: $e');
       return null;
     }
   }
 
-  // Get local file path if exists
-  Future<File?> getLocalVideo(String fileName) async {
-    final dir = await getVideoDirectory();
-    final file = File('${dir.path}/$fileName');
-    return await file.exists() ? file : null;
+  Future<VideoUrlModel?> fetchvideourl(String videoId) async {
+    try {
+      final data = await _supabase
+          .from('videos')
+          .select()
+          .eq('id', videoId)
+          .single();
+
+      return VideoUrlModel.fromJson(data);
+    } catch (e) {
+      debugPrint('Error fetching video URL: $e');
+      return null;
+    }
   }
 
-  // Optional: Delete single video
-  Future<void> deleteVideo(String fileName) async {
-    final dir = await getVideoDirectory();
-    final file = File('${dir.path}/$fileName');
-    if (await file.exists()) await file.delete();
+  // --- LOCAL CACHING LOGIC ---
+
+  Future<File?> getLocalVideo(String videoId) async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final file = File('${directory.path}/video_$videoId.mp4');
+      if (await file.exists()) {
+        return file;
+      }
+    } catch (e) {
+      debugPrint('Error accessing local video: $e');
+    }
+    return null;
+  }
+
+  Future<File?> downloadVideo(String url, String videoId) async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final file = File('${directory.path}/video_$videoId.mp4');
+
+      // Simple limit check from constants if available
+      final int limit = AppConstants.localVideosLimit;
+      final existingFiles = directory.listSync().where((f) => f.path.contains('video_')).toList();
+      
+      if (existingFiles.length >= limit) {
+         // Optionally delete oldest if limit reached, or just stop
+         debugPrint('Cache limit reached, skipping download');
+         return null;
+      }
+
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        await file.writeAsBytes(response.bodyBytes);
+        return file;
+      }
+    } catch (e) {
+      debugPrint('Error downloading video: $e');
+    }
+    return null;
+  }
+}
+
+class VideoModel {
+  final String id;
+  final bool isPremium;
+  final String? planType;
+
+  VideoModel({
+    required this.id,
+    required this.isPremium,
+    this.planType,
+  });
+
+  factory VideoModel.fromJson(Map<String, dynamic> json) {
+    return VideoModel(
+      id: json['id'] ?? '',
+      isPremium: json['is_premium'] ?? false,
+      planType: json['plan_type'],
+    );
+  }
+}
+
+class VideoUrlModel {
+  final String videoId;
+  final String videoUrl;
+
+  VideoUrlModel({
+    required this.videoId,
+    required this.videoUrl,
+  });
+
+  factory VideoUrlModel.fromJson(Map<String, dynamic> json) {
+    return VideoUrlModel(
+      videoId: json['id'] ?? '',
+      videoUrl: json['video_url'] ?? '',
+    );
   }
 }

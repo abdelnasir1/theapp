@@ -50,7 +50,7 @@ class MyApp extends StatelessWidget {
                 GlobalWidgetsLocalizations.delegate,
               ],
               debugShowCheckedModeBanner: false,
-              title: 'maaz solutions',
+              title: 'maaz com.maazplatform.solutions',
               theme: AppTheme.lightTheme,
               darkTheme: AppTheme.darkTheme,
               themeMode: themeProvider.themeMode,

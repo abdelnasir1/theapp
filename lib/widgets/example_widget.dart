@@ -117,16 +117,15 @@ class _ExampleWidgetState extends State<ExampleWidget> {
                       ),
                     ),
 
-                    // ---------- Text Solutions Grid Section ----------
+                    // ---------- Text Instruction Section (Centered) ----------
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
-                      child: Align(
-                        alignment: Alignment.centerRight,
+                      padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+                      child: Center( // Centered instruction as requested
                         child: Text(
                           'اختر الإجابة الصحيحة',
-                          style: theme.textTheme.labelLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: colorScheme.onSurfaceVariant,
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.w900,
+                            color: colorScheme.primary,
                           ),
                         ),
                       ),
@@ -140,7 +139,7 @@ class _ExampleWidgetState extends State<ExampleWidget> {
                         crossAxisCount: 2,
                         crossAxisSpacing: 12,
                         mainAxisSpacing: 12,
-                        childAspectRatio: 2.8,
+                        childAspectRatio: 2.5, // Adjusted for balanced centering
                       ),
                       itemCount: widget.data.solutions.length,
                       itemBuilder: (context, index) {
@@ -188,23 +187,26 @@ class _ExampleWidgetState extends State<ExampleWidget> {
                                 width: (isSelected || (hasResponded && solution.isCorrect)) ? 2.5 : 1.5,
                               ),
                             ),
-                            child: Center(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  if (icon != null) ...[
-                                    Icon(icon, color: borderColor, size: 24),
-                                    const SizedBox(width: 8),
-                                  ],
-                                  Text(
+                            child: Stack( // Center content perfectly
+                              alignment: Alignment.center,
+                              children: [
+                                if (icon != null)
+                                  Positioned(
+                                    right: 8,
+                                    child: Icon(icon, color: borderColor, size: 20),
+                                  ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                                  child: Text(
                                     solution.label,
-                                    style: theme.textTheme.headlineSmall?.copyWith(
+                                    textAlign: TextAlign.center,
+                                    style: theme.textTheme.titleMedium?.copyWith(
                                       color: textColor,
-                                      fontWeight: FontWeight.bold,
+                                      fontWeight: FontWeight.w600, // Reverted from bold/bigger
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
                         );

@@ -110,7 +110,7 @@ class Example {
   });
 
   factory Example.fromJson(Map<String, dynamic> json) {
-    // Parse solutions from the 'options' JSON column
+    // Parse com.maazplatform.solutions from the 'options' JSON column
     var solutionsList = <Solution>[];
     if (json['options'] != null) {
       if (json['options'] is List) {
