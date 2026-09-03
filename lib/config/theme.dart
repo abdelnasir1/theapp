@@ -6,7 +6,7 @@ class AppTheme {
     fontFamily: "tajawal",
     useMaterial3: true,
     colorScheme: ColorScheme.fromSeed(
-      seedColor: const Color(0xFF2196F3),
+      seedColor: const Color(0xFFFFFBD3),
       brightness: Brightness.light,
     ),
     appBarTheme: const AppBarTheme(
@@ -29,8 +29,8 @@ class AppTheme {
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
     ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      selectedItemColor: Color(0xFF2196F3),
-      unselectedItemColor: Colors.grey,
+      selectedItemColor: Color(0xFFF9CC95),
+      unselectedItemColor: Colors.yellow,
       type: BottomNavigationBarType.fixed,
     ),
   );
@@ -63,4 +63,3 @@ class AppTheme {
     ),
   );
 }
-

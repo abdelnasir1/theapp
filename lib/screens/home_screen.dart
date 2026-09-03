@@ -256,7 +256,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 items: [
                   'راجع درسك أولاً',
                   'استخدم الورقة والقلم في كل مسألة',
-                  'سؤالك يكم فهمك',
+                  'سؤالك يكمل فهمك',
                 ],
                 onTap: () {},
               ),

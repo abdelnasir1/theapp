@@ -36,22 +36,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   // ========== LOGO PLACEHOLDER ==========
                   // Replace this Container with your Image.asset or Image.network later
-                  Container(
-                    width: 120,
-                    height: 120,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor.withAlpha(10),
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(
-                        color: Theme.of(context).primaryColor.withAlpha(20),
-                        width: 2,
-                      ),
-                    ),
-                    child: Icon(
-                      Icons.calculate_rounded,
-                      size: 60,
-                      color: Theme.of(context).primaryColor,
-                    ),
+                  SizedBox(
+                    width: 157,
+                    height: 157,
+                    child:Image.asset("assets/images/thelogo.png")
                   ),
                   // =====================================
 
@@ -59,7 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   // App Name
                   Text(
-                    'حلول الرياضيات',
+                    'منصة أستاذ معاذ ',
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
