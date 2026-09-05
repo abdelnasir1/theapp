@@ -27,61 +27,32 @@ class _LevelOneScreenState extends State<LevelOneScreen> {
     return Scaffold(
       backgroundColor: colorScheme.surface,
       appBar: AppBar(
-        elevation: 0,
-        backgroundColor: colorScheme.surface,
-        surfaceTintColor: Colors.transparent,
-        title: Text(
-          'اختر المقرر الدراسي',
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w900,
+        title: Text('اختر المقرر الدراسي',
+          style: TextStyle(
+            fontFamily: "tajawal",
+            fontWeight: FontWeight.w400 ,
+            fontSize: 22,
+            color: colorScheme.primary
           ),
         ),
-        centerTitle: true,
       ),
       body: Consumer<ContentProvider>(
         builder: (context, provider, _) {
           if (provider.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (provider.levelOneCategories.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.menu_book_rounded,
-                      size: 64, color: colorScheme.primary.withValues(alpha: 0.2)),
-                  const SizedBox(height: 16),
-                  const Text('لا يوجد محتوى حالياً',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                ],
-              ),
-            );
+            return const Center(child: Text('لا يوجد محتوى حالياً'));
           }
 
-          return GridView.builder(
-            padding: const EdgeInsets.all(20),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 20,
-              mainAxisSpacing: 20,
-              childAspectRatio: 0.9,
-            ),
+          return ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
             itemCount: provider.levelOneCategories.length,
             itemBuilder: (context, index) {
               final category = provider.levelOneCategories[index];
-              return Card(
-                elevation: 0,
-                color: colorScheme.surfaceContainerLow,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(24),
-                  side: BorderSide(
-                    color: colorScheme.primary.withValues(alpha: 0.1),
-                    width: 1,
-                  ),
-                ),
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 24),
                 child: InkWell(
                   onTap: () {
                     Navigator.pushNamed(
@@ -90,37 +61,32 @@ class _LevelOneScreenState extends State<LevelOneScreen> {
                       arguments: {'categoryId': category.id},
                     );
                   },
-                  borderRadius: BorderRadius.circular(24),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: colorScheme.primary.withValues(alpha: 0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          _getCategoryIcon(index),
-                          size: 40,
-                          color: colorScheme.primary,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        child: Text(
-                          category.name,
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w900,
-                            color: colorScheme.onSurface,
+                  borderRadius: BorderRadius.circular(20),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.onPrimaryContainer, // Soft blending
+                      borderRadius: BorderRadius.circular(20),
+
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Icon(Icons.arrow_back_ios_new_rounded, 
+                             color: colorScheme.primary, size: 24),
+                        Expanded(
+                          child: Text(
+                            category.name,
+                            textAlign: TextAlign.right,
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.w900,
+                              color: colorScheme.onPrimary,
+                            ),
                           ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -129,17 +95,5 @@ class _LevelOneScreenState extends State<LevelOneScreen> {
         },
       ),
     );
-  }
-
-  IconData _getCategoryIcon(int index) {
-    const icons = [
-      Icons.functions_rounded,
-      Icons.calculate_rounded,
-      Icons.architecture_rounded,
-      Icons.auto_awesome_motion_rounded,
-      Icons.science_rounded,
-      Icons.psychology_rounded,
-    ];
-    return icons[index % icons.length];
   }
 }
