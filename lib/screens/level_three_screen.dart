@@ -69,7 +69,7 @@ class _LevelThreeScreenState extends State<LevelThreeScreen> {
                 }
 
                 return ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 80), // Added bottom padding
                   itemCount: categories.length,
                   itemBuilder: (context, index) {
                     final category = categories[index];

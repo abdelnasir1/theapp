@@ -23,7 +23,6 @@ dependencies:
   video_player: ^2.14.0
   audioplayers: ^6.1.0
   url_launcher: ^6.3.1
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -42,13 +41,16 @@ flutter:
     - assets/footers/
 
   fonts:
+    - family: MyFlutterApp
+      fonts:
+      - asset: assets/fonts/MyFlutterApp.ttf
     - family: Tajawal
       fonts:
-        - asset: assets/tajawal/Tajawal-Bold.ttf
+        - asset: assets/fonts/tajawal/Tajawal-Bold.ttf
           weight: 700
-        - asset: assets/tajawal/Tajawal-Light.ttf
+        - asset: assets/fonts/tajawal/Tajawal-Light.ttf
           weight: 300
-        - asset: assets/tajawal/Tajawal-Regular.ttf
+        - asset: assets/fonts/tajawal/Tajawal-Regular.ttf
           weight: 400
 
 

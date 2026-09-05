@@ -54,8 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ? 'المفضلة'
                   : 'الملف الشخصي',
           style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w900,
-            letterSpacing: 0.8,
+            fontWeight: FontWeight.w800,
           ),
         ),
         centerTitle: true,
@@ -75,8 +74,11 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'الرئيسية',
           ),
           NavigationDestination(
-            icon: Icon(Icons.favorite_border_rounded),
-            selectedIcon: Icon(Icons.favorite_rounded),
+            icon: Icon(
+              IconData(0xf333, fontFamily: 'MyFlutterApp'),
+            ),
+            selectedIcon: Icon(
+              IconData(0xf333, fontFamily: 'MyFlutterApp') ),
             label: 'المفضلة',
           ),
           NavigationDestination(
@@ -144,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
               // Welcome Header
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(15),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -154,9 +156,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     begin: Alignment.topRight,
                     end: Alignment.bottomLeft,
                   ),
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                      color: colorScheme.primary.withValues(alpha: 0.1)),
+                      width: 3,
+                      color: colorScheme.primary.withValues(alpha: 0.7)),
                 ),
                 child: Column(
                   children: [
@@ -198,7 +201,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               Text(
                                 authProvider.user == null
-                                    ? 'أهلاً بك في عالم الرياضيات'
+                                    ? 'أهلاً بك في منصة أستاذ معاذ'
                                     : 'مستعد لدرس اليوم؟',
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                   color: colorScheme.onSurfaceVariant,
@@ -242,12 +245,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 15),
 
               // Promo Card (Now Second)
               const PromoAdCard(),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 15),
 
               // Tips Card (Now Third)
               SoftInfoCard(
@@ -356,7 +359,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
-                      Icons.favorite_border_rounded,
+                      IconData(0xf333, fontFamily: 'MyFlutterApp'),
                       size: 60,
                       color:
                           colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
@@ -681,9 +684,12 @@ class SoftInfoCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(28),
-          color: colorScheme.surfaceContainerLow.withValues(alpha: 0.5),
-          border: Border.all(color: colorScheme.outlineVariant),
+          borderRadius: BorderRadius.circular(10),
+          color: colorScheme.primary.withAlpha(40),
+          border: Border.all(
+              width: 3,
+              color: colorScheme.primary
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -742,19 +748,18 @@ class PromoAdCard extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final blue = const Color(0xFF2196F3);
-    final yellow = const Color(0xFFFFD54F);
-    final red = const Color(0xFFE57373);
+    final blue = const Color(0xFFFFC486);
+    final yellow = const Color(0xFFA639F0);
 
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(21),
           gradient: LinearGradient(
-            colors: [blue, blue.withValues(alpha: 0.8)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+            colors: [yellow.withAlpha(90), blue],
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
           ),
           boxShadow: [
             BoxShadow(
@@ -772,7 +777,7 @@ class PromoAdCard extends StatelessWidget {
                 right: -20,
                 bottom: -20,
                 child: Icon(Icons.calculate,
-                    size: 150, color: Colors.white.withValues(alpha: 0.1)),
+                    size: 150, color: Colors.yellow.withValues(alpha: 0.2)),
               ),
               Padding(
                 padding: const EdgeInsets.all(24),
@@ -784,19 +789,19 @@ class PromoAdCard extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
+                              Text(
                                 'مجموعات 2027',
                                 style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 26,
+                                    color:Colors.white,
+                                    fontSize: 30,
                                     fontWeight: FontWeight.w900),
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                'الرياضيات أونلاين',
+                                'الرياضيات ONLINE',
                                 style: TextStyle(
-                                    color: Colors.white.withValues(alpha: 0.9),
-                                    fontSize: 18,
+                                    color:Colors.white70,
+                                    fontSize: 20,
                                     fontWeight: FontWeight.w700),
                               ),
                             ],
@@ -832,14 +837,20 @@ class PromoAdCard extends StatelessWidget {
                               borderRadius: BorderRadius.circular(16)),
                           elevation: 0,
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.phone, size: 28),
-                            SizedBox(width: 10),
                             Text('احجز مكانك الآن',
                                 style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w900)),
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w900,
+                                    color: ThemeData.light().colorScheme.onPrimary
+                                )),
+                            SizedBox(width: 10),
+                            Icon(Icons.phone, size: 28,
+                              color: Colors.white,
+
+                            ),
                           ],
                         ),
                       ),
